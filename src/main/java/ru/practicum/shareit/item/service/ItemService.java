@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.IncorrectParameterException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -77,9 +76,11 @@ public class ItemService {
     }
 
     public Collection<Item> searchItem(String query, Integer userID) {
-        if(query.isEmpty()) return new ArrayList<>();
+        if (query.isEmpty()) {
+            return new ArrayList<>();
+        }
         return itemStorage.getAll().stream()
-                .filter(i -> (i.getName().toLowerCase().strip().contains(query.toLowerCase())|| i.getDescription().toLowerCase().strip().contains(query.toLowerCase())) && i.isAvailable() == true)
+                .filter(i -> (i.getName().toLowerCase().strip().contains(query.toLowerCase()) || i.getDescription().toLowerCase().strip().contains(query.toLowerCase())) && i.isAvailable() == true)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 

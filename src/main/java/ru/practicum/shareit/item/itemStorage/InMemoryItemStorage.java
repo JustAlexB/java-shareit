@@ -17,11 +17,12 @@ public class InMemoryItemStorage extends InMemoryStorage<Item> {
     }
 
     @Override
-    public Item create(Item item){
+    public Item create(Item item) {
         super.create(item);
         item.setId(elementID);
         return item;
     }
+
     @Override
     public Item update(Item item) {
         elements.put(item.getId(), item);

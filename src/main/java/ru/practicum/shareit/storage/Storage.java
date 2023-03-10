@@ -3,7 +3,7 @@ package ru.practicum.shareit.storage;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface Storage <T> {
+public interface Storage<T> {
     Collection<T> getAll();
 
     T create(T element);
@@ -14,5 +14,5 @@ public interface Storage <T> {
 
     Optional<T> delByID(Integer elementID);
 
-    boolean validation (T element);
+    boolean validation(T element);
 }

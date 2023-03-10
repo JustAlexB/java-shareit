@@ -42,7 +42,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse MethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+    public ErrorResponse methodArgumentNotValidException(final MethodArgumentNotValidException e) {
         return new ErrorResponse(
                 "Параметр не прошел валидацию: " + e.getMessage()
         );
