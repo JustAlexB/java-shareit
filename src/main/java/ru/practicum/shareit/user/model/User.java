@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.model;
 import lombok.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -24,4 +25,8 @@ public class User {
         return id != user.id && email.equals(user.email);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, email);
+    }
 }
