@@ -4,8 +4,6 @@ import lombok.Data;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotNull;
-
 @Data
 public class Item {
     int id;
