@@ -9,10 +9,8 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ItemDto {
     int id;
-    @NotNull
     @NotBlank
     String name;
-    @NotNull
     @NotBlank
     String description;
     @NotNull

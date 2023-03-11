@@ -52,6 +52,6 @@ public class ItemController {
     @GetMapping("/search")
     public Collection<Item> searchItem(@RequestParam(name = "text", required = false) String query, @RequestHeader("X-Sharer-User-Id") Integer userId) {
         log.info("Поиск вещи {} владельца ID = {}", query, userId);
-        return itemService.searchItem(query, userId);
+        return itemService.searchItem(query);
     }
 }

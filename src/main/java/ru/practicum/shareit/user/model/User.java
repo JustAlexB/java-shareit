@@ -1,8 +1,6 @@
 package ru.practicum.shareit.user.model;
 
 import lombok.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Getter
@@ -10,11 +8,8 @@ import java.util.Objects;
 @ToString
 @AllArgsConstructor
 public class User {
-    @NotNull
     int id;
-    @NotNull
     String name;
-    @Email
     String email;
 
     @Override

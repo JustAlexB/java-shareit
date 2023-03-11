@@ -8,14 +8,10 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class Item {
-    @NotNull
     int id;
-    @NotNull
     String name;
     String description;
-    @NotNull
     boolean available;
-    @NotNull
     User owner;
     ItemRequest request;
 

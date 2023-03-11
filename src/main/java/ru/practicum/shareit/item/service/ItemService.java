@@ -75,19 +75,18 @@ public class ItemService {
         return itemDto;
     }
 
-    public Collection<Item> searchItem(String query, Integer userID) {
+    public Collection<Item> searchItem(String query) {
         if (query.isEmpty()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         return itemStorage.getAll().stream()
-                .filter(i -> (i.getName().toLowerCase().strip().contains(query.toLowerCase()) || i.getDescription().toLowerCase().strip().contains(query.toLowerCase())) && i.isAvailable() == true)
+                .filter(i -> (i.getName().toLowerCase().contains(query.toLowerCase()) || i.getDescription().toLowerCase().contains(query.toLowerCase())) && i.isAvailable() == true)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public boolean validation(ItemDto itemDto) {
+    public void validation(ItemDto itemDto) {
         if (itemDto.getAvailable() == null) {
             throw new IncorrectParameterException("available");
         }
-        return true;
     }
 }
