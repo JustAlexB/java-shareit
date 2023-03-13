@@ -80,7 +80,8 @@ public class ItemService {
             return Collections.emptyList();
         }
         return itemStorage.getAll().stream()
-                .filter(i -> (i.getName().toLowerCase().contains(query.toLowerCase()) || i.getDescription().toLowerCase().contains(query.toLowerCase())) && i.isAvailable() == true)
+                .filter(i -> i.isAvailable())
+                .filter(i -> i.getName().toLowerCase().contains(query) || i.getDescription().toLowerCase().contains(query))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 

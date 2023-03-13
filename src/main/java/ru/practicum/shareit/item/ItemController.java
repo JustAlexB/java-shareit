@@ -15,13 +15,10 @@ import java.util.Collection;
 @RequestMapping("/items")
 @Slf4j
 public class ItemController {
-
-    private final UserService userService;
     private final ItemService itemService;
 
     @Autowired
     public ItemController(UserService userService, ItemService itemService) {
-        this.userService = userService;
         this.itemService = itemService;
     }
 
@@ -52,6 +49,6 @@ public class ItemController {
     @GetMapping("/search")
     public Collection<Item> searchItem(@RequestParam(name = "text", required = false) String query, @RequestHeader("X-Sharer-User-Id") Integer userId) {
         log.info("Поиск вещи {} владельца ID = {}", query, userId);
-        return itemService.searchItem(query);
+        return itemService.searchItem(query.toLowerCase());
     }
 }
