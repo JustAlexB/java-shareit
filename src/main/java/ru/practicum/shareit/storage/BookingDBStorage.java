@@ -50,15 +50,14 @@ public class BookingDBStorage implements Storage<Booking> {
 
     @Override
     public void validation(Booking booking) {
-        LocalDateTime start_date = booking.getStart();
-        LocalDateTime end_date = booking.getEnd();
-        if(
-                start_date == null || end_date == null
-                || end_date.isBefore(start_date)
-                || end_date.isBefore(LocalDateTime.now())
-                || end_date.isEqual(start_date)
-                || start_date.isBefore(LocalDateTime.now())) {
-            throw new BookingDataValidationException("start: " + start_date + " end: " + end_date);
+        LocalDateTime startDate = booking.getStart();
+        LocalDateTime endDate = booking.getEnd();
+        if (startDate == null || endDate == null
+                || endDate.isBefore(startDate)
+                || endDate.isBefore(LocalDateTime.now())
+                || endDate.isEqual(startDate)
+                || startDate.isBefore(LocalDateTime.now())) {
+            throw new BookingDataValidationException("start: " + startDate + " end: " + endDate);
         }
     }
 }

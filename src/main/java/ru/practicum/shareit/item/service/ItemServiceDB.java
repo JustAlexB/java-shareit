@@ -44,21 +44,21 @@ public class ItemServiceDB {
         if (userID != null) {
             List<ItemDto> items = itemStorage.findALlByOwner(userStorage.findById(userID).get()).stream()
                     .sorted(Comparator.comparing(Item::getId))
-                    .map(this::ItemToDto)
+                    .map(this::itemToDto)
                     .collect(Collectors.toList());
             setBookingDetails(items);
             return items;
         }
 
-        List<ItemDto> items =  itemStorage.findAll().stream()
-                .map(this::ItemToDto)
+        List<ItemDto> items = itemStorage.findAll().stream()
+                .map(this::itemToDto)
                 .collect(Collectors.toList());
         setBookingDetails(items);
 
         return items;
     }
 
-    private ItemDto ItemToDto(Item item) {
+    private ItemDto itemToDto(Item item) {
         return ItemMapper.toItemDto(item);
     }
 
@@ -87,8 +87,7 @@ public class ItemServiceDB {
         Item fItem = itemStorage.findById(itemID)
                 .orElseThrow(() -> new NotFoundException("Не найдена вещь с ID = " + itemID));
         ItemDto itemDto = ItemMapper.toItemDto(fItem);
-
-        if(fItem.getOwner().getId() == userId) {
+        if (fItem.getOwner().getId() == userId) {
             BookingDetails lastBooking = bookingStorage.getLastBooking(itemID, LocalDateTime.now());
             itemDto.setLastBooking(lastBooking);
             BookingDetails nextBooking = bookingStorage.getNextBooking(itemID, LocalDateTime.now());
@@ -142,7 +141,7 @@ public class ItemServiceDB {
     }
 
     @Transactional
-    public CommentDto addComment(CommentDto commentDto, Integer itemId, Integer userId){
+    public CommentDto addComment(CommentDto commentDto, Integer itemId, Integer userId) {
         validationComment(commentDto, itemId, userId);
         Optional<User> fUser = userStorage.findById(userId);
         Optional<Item> fItem = itemStorage.findById(itemId);
@@ -173,7 +172,7 @@ public class ItemServiceDB {
         }
         if (!bookingStorage.existsBookingByBooker_IdAndItem_IdAndStatusAndStartBefore(userId, itemId, BookingStatus.APPROVED,
                 LocalDateTime.now())) {
-            throw new IncorrectParameterException("Пользоваель с ID =" + userId + " не бронировал вещь с ID ="  + itemId);
+            throw new IncorrectParameterException("Пользоваель с ID =" + userId + " не бронировал вещь с ID =" + itemId);
         }
 
     }

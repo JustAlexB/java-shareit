@@ -1,6 +1,6 @@
 package ru.practicum.shareit.exceptions;
 
-public class UnsupportedStatusException extends RuntimeException{
+public class UnsupportedStatusException extends RuntimeException {
     private final String parameter;
 
     public UnsupportedStatusException(String parameter) {
