@@ -3,9 +3,10 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.service.ItemServiceDB;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
@@ -15,10 +16,10 @@ import java.util.Collection;
 @RequestMapping("/items")
 @Slf4j
 public class ItemController {
-    private final ItemService itemService;
+    private final ItemServiceDB itemService;
 
     @Autowired
-    public ItemController(UserService userService, ItemService itemService) {
+    public ItemController(UserService userService, ItemServiceDB itemService) {
         this.itemService = itemService;
     }
 
@@ -37,18 +38,25 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ItemDto getItemById(@PathVariable("itemId") Integer itemId, @RequestHeader("X-Sharer-User-Id") Integer userId) {
         log.info("Запрос вещи {}, владелец ID = {}", itemId, userId);
-        return itemService.getItemByID(itemId);
+        return itemService.getItemByID(itemId, userId);
     }
 
     @GetMapping
-    public Collection<Item> getAllItems(@RequestHeader("X-Sharer-User-Id") Integer userId) {
+    public Collection<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Integer userId) {
         log.info("Запрос всех вещей владельца ID = {}", userId);
         return itemService.getAll(userId);
     }
 
     @GetMapping("/search")
-    public Collection<Item> searchItem(@RequestParam(name = "text", required = false) String query, @RequestHeader("X-Sharer-User-Id") Integer userId) {
+    public Collection<Item> searchItem(@RequestParam(name = "text", required = false) String query,
+                                       @RequestHeader("X-Sharer-User-Id") Integer userId) {
         log.info("Поиск вещи {} владельца ID = {}", query, userId);
         return itemService.searchItem(query.toLowerCase());
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@Valid @RequestBody CommentDto commentDto, @PathVariable Integer itemId,
+                                 @RequestHeader(value = "X-Sharer-User-Id") Integer userId) {
+        return itemService.addComment(commentDto, itemId, userId);
     }
 }

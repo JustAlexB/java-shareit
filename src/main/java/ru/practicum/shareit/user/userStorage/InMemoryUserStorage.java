@@ -50,7 +50,7 @@ public class InMemoryUserStorage extends InMemoryStorage<User> {
     }
 
     @Override
-    public boolean validation(User user) {
+    public void validation(User user) {
         if (user.getEmail() == null) {
             throw new IncorrectParameterException("email");
         }
@@ -60,6 +60,5 @@ public class InMemoryUserStorage extends InMemoryStorage<User> {
                 throw new ValidationException("Пользователь с таким email уже существует.", user);
             }
         }
-        return true;
     }
 }

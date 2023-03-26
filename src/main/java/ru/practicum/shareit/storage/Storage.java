@@ -14,5 +14,5 @@ public interface Storage<T> {
 
     Optional<T> delByID(Integer elementID);
 
-    boolean validation(T element);
+    void validation(T element);
 }

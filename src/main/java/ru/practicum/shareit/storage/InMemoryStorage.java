@@ -35,7 +35,7 @@ public class InMemoryStorage<T> implements Storage<T> {
     }
 
     @Override
-    public boolean validation(T element) {
-        return false;
+    public void validation(T element) {
+
     }
 }

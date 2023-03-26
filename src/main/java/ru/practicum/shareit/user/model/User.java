@@ -1,15 +1,23 @@
 package ru.practicum.shareit.user.model;
 
 import lombok.*;
+
+import javax.persistence.*;
 import java.util.Objects;
 
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
+@Entity
+@Table(name = "users", schema = "public")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
+    @Column(nullable = false)
     String name;
+    @Column(nullable = false, unique=true)
     String email;
 
     @Override
@@ -23,5 +31,8 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, email);
+    }
+
+    public User() {
     }
 }
