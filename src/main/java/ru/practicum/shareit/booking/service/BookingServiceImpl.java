@@ -132,7 +132,7 @@ public class BookingServiceImpl implements BookingService {
         if (fUser.isEmpty()) {
             throw new NotFoundException("Пользователь не найден");
         }
-        if (fItem.getOwner().getId() == userID) {
+        if (fItem.getOwner().getId().equals(userID)) {
             throw new NotFoundException("Вещь не может быть забронирована владельцем");
         }
         if (!fItem.isAvailable()) {
@@ -149,7 +149,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingAnswerDto updateStatus(Long bookingID, Long userID, String approved) {
         Booking fbooking = bookingRepository.findById(bookingID)
                 .orElseThrow(() -> new NotFoundException("Бронирование не найдено"));
-        if (fbooking.getItem().getOwner().getId() != userID) {
+        if (!fbooking.getItem().getOwner().getId().equals(userID)) {
             throw new NotFoundException("Пользователь не может изменять статус бронирования");
         }
         if (!fbooking.getStatus().equals(BookingStatus.WAITING)) {

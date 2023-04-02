@@ -59,7 +59,7 @@ public class ItemService {
         if (user.isEmpty() || item.isEmpty()) {
             throw new NotFoundException("Не удалось найти вещь для обновления");
         }
-        if (userID != item.get().getOwner().getId()) {
+        if (!item.get().getOwner().getId().equals(userID)) {
             throw new NotFoundException("Нельзя обновлять не свои вещи");
         }
         if (itemDto.getName() != null) {
