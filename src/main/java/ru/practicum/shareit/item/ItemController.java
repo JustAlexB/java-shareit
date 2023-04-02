@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.dto.ItemAnswerDto;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemServiceDB;
+import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
@@ -17,10 +17,10 @@ import java.util.Collection;
 @RequestMapping("/items")
 @Slf4j
 public class ItemController {
-    private final ItemServiceDB itemService;
+    private final ItemServiceImpl itemService;
 
     @Autowired
-    public ItemController(UserService userService, ItemServiceDB itemService) {
+    public ItemController(UserService userService, ItemServiceImpl itemService) {
         this.itemService = itemService;
     }
 

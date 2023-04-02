@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class ItemServiceDB {
+public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemStorage;
     private final UserRepository userStorage;
     private final BookingRepository bookingStorage;
@@ -40,13 +40,14 @@ public class ItemServiceDB {
 
 
     @Autowired
-    public ItemServiceDB(ItemRepository itemStorage, UserRepository userStorage, BookingRepository bookingStorage, CommentRepository commentStorage) {
+    public ItemServiceImpl(ItemRepository itemStorage, UserRepository userStorage, BookingRepository bookingStorage, CommentRepository commentStorage) {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
         this.bookingStorage = bookingStorage;
         this.commentStorage = commentStorage;
     }
 
+    @Override
     public Collection<ItemAnswerDto> getAll(Long userId) {
         if (!userStorage.existsById(userId)) {
             throw new NotFoundException("Пользователь с ID =  " + userId + " не найден");
@@ -106,57 +107,9 @@ public class ItemServiceDB {
                                 .map(CommentMapper::toCommentDto)
                                 .collect(Collectors.toList())))
                 .collect(Collectors.toList());
-
-//        if (userId != null) {
-//            List<ItemDto> items = itemStorage.findALlByOwner(userStorage.findById(userId).get()).stream()
-//                    .sorted(Comparator.comparing(Item::getId))
-//                    .map(this::itemToDto)
-//                    .collect(Collectors.toList());
-//            setBookingDetails(items);
-//            return items;
-//        }
-//
-//        List<ItemDto> items = itemStorage.findAll().stream()
-//                .map(this::itemToDto)
-//                .collect(Collectors.toList());
-//        setBookingDetails(items);
-//
-//        return items;
-
     }
 
-//    private ItemDto itemToDto(Item item) {
-//        return ItemMapper.toItemDto(item);
-//    }
-//
-//    private void setBookingDetails(List<ItemDto> items) {
-//        List<Long> itemsId = items.stream()
-//                .map(ItemDto::getId)
-//                .collect(Collectors.toList());
-//
-//        List<Comment> commentList = commentStorage.findAllByItemsId(itemsId);
-//        List<BookingDetails> lastBookings = bookingStorage.getLastBookings(itemsId, LocalDateTime.now());
-//        List<BookingDetails> nextBookings = bookingStorage.getNextBookings(itemsId, LocalDateTime.now());
-//
-//        Map<Long, List<Comment>> comments = new HashMap<>();
-//        itemsId.forEach(key -> {
-//            List<Comment> commentsValue = commentList.stream()
-//                    .filter(comment -> Objects.equals(comment.getAuthor().getId(), key))
-//                    .collect(Collectors.toList());
-//            comments.put(key, commentsValue);
-//        });
-//        if (!lastBookings.isEmpty()) {
-//            for (int i = 0; i < lastBookings.size(); i++) {
-//                items.get(i).setLastBooking(lastBookings.get(i));
-//            }
-//        }
-//        if (!nextBookings.isEmpty()) {
-//            for (int i = 0; i < nextBookings.size(); i++) {
-//                items.get(i).setNextBooking(nextBookings.get(i));
-//            }
-//        }
-//    }
-
+    @Override
     public ItemAnswerDto getItemByID(Long itemID, Long userId) {
         Item item = itemStorage.findById(itemID)
                 .orElseThrow(() -> new NotFoundException("Вещь с ID = " + itemID + " не найдена"));
@@ -167,13 +120,15 @@ public class ItemServiceDB {
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
 
-        BookingDetails lastBooking = BookingMapper.toBookingDetails(bookingStorage.findFirstByItem_IdAndItem_Owner_IdAndStartIsBefore(
+        BookingDetails lastBooking = BookingMapper.
+                toBookingDetails(bookingStorage.findFirstByItem_IdAndItem_Owner_IdAndStartIsBefore(
                         itemID,
                         userId,
                         now,
                         SORT_DESC));
 
-        BookingDetails nextBooking = BookingMapper.toBookingDetails(bookingStorage.findFirstByItem_IdAndItem_Owner_IdAndStartIsAfterAndStatusIsNot(
+        BookingDetails nextBooking = BookingMapper.
+                toBookingDetails(bookingStorage.findFirstByItem_IdAndItem_Owner_IdAndStartIsAfterAndStatusIsNot(
                         itemID,
                         userId,
                         now,
@@ -183,6 +138,7 @@ public class ItemServiceDB {
         return ItemMapper.toAnswerItemDto(item, lastBooking, nextBooking, comments);
     }
 
+    @Override
     public ItemDto create(ItemDto itemDto, Long userID) {
         validationItemDto(itemDto);
         Optional<User> user = userStorage.findById(userID);
@@ -195,6 +151,7 @@ public class ItemServiceDB {
         return itemDto;
     }
 
+    @Override
     public ItemDto update(Long itemID, Long userID, ItemDto itemDto) {
         Optional<User> user = userStorage.findById(userID);
         Optional<Item> item = itemStorage.findById(itemID);
@@ -219,6 +176,7 @@ public class ItemServiceDB {
         return ItemMapper.toItemDto(itemStorage.findById(itemID).get());
     }
 
+    @Override
     public Collection<Item> searchItem(String query) {
         if (query.isEmpty()) {
             return Collections.emptyList();
@@ -226,6 +184,7 @@ public class ItemServiceDB {
         return itemStorage.searchItem(query);
     }
 
+    @Override
     @Transactional
     public CommentDto addComment(CommentDto commentDto, Long itemId, Long userId) {
         validationComment(commentDto, itemId, userId);
@@ -246,12 +205,14 @@ public class ItemServiceDB {
         return CommentMapper.toCommentDto(commentStorage.save(newComment));
     }
 
+    @Override
     public void validationItemDto(ItemDto itemDto) {
         if (itemDto.getAvailable() == null) {
             throw new IncorrectParameterException("available");
         }
     }
 
+    @Override
     public void validationComment(CommentDto commentDto, Long itemId, Long userId) {
         if (commentDto.getText().isBlank()) {
             throw new IncorrectParameterException("текст комментария не может быть пустым");

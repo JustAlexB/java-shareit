@@ -15,7 +15,7 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.UnsupportedStatusException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemServiceDB;
+import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.repository.BookingRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceDB;
@@ -27,14 +27,14 @@ import java.util.stream.Collectors;
 @Service
 public class BookingServiceImpl implements BookingService {
     protected final UserServiceDB userServiceDB;
-    protected final ItemServiceDB itemServiceDB;
+    protected final ItemServiceImpl itemServiceImpl;
     private final BookingRepository bookingRepository;
 
 
     @Autowired
-    public BookingServiceImpl(UserServiceDB userServiceDB, ItemServiceDB itemServiceDB, BookingRepository bookingRepository) {
+    public BookingServiceImpl(UserServiceDB userServiceDB, ItemServiceImpl itemServiceImpl, BookingRepository bookingRepository) {
         this.userServiceDB = userServiceDB;
-        this.itemServiceDB = itemServiceDB;
+        this.itemServiceImpl = itemServiceImpl;
         this.bookingRepository = bookingRepository;
     }
 
@@ -128,7 +128,7 @@ public class BookingServiceImpl implements BookingService {
         Booking newBooking = BookingMapper.toBooking(bookingDto);
         validation(newBooking);
         Optional<User> fUser = userServiceDB.getUserByID(userID);
-        Item fItem = ItemMapper.toItemFromAnswer(itemServiceDB.getItemByID(bookingDto.getItemId(), userID));
+        Item fItem = ItemMapper.toItemFromAnswer(itemServiceImpl.getItemByID(bookingDto.getItemId(), userID));
         if (fUser.isEmpty()) {
             throw new NotFoundException("Пользователь не найден");
         }
