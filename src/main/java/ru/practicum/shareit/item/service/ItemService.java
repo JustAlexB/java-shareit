@@ -9,11 +9,18 @@ import java.util.Collection;
 
 public interface ItemService {
     Collection<ItemAnswerDto> getAll(Long userId);
+
     ItemAnswerDto getItemByID(Long itemID, Long userId);
+
     ItemDto create(ItemDto itemDto, Long userID);
+
     ItemDto update(Long itemID, Long userID, ItemDto itemDto);
+
     Collection<Item> searchItem(String query);
+
     CommentDto addComment(CommentDto commentDto, Long itemId, Long userId);
+
     void validationItemDto(ItemDto itemDto);
+
     void validationComment(CommentDto commentDto, Long itemId, Long userId);
 }

@@ -120,15 +120,15 @@ public class ItemServiceImpl implements ItemService {
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
 
-        BookingDetails lastBooking = BookingMapper.
-                toBookingDetails(bookingStorage.findFirstByItem_IdAndItem_Owner_IdAndStartIsBefore(
+        BookingDetails lastBooking = BookingMapper
+                .toBookingDetails(bookingStorage.findFirstByItem_IdAndItem_Owner_IdAndStartIsBefore(
                         itemID,
                         userId,
                         now,
                         SORT_DESC));
 
-        BookingDetails nextBooking = BookingMapper.
-                toBookingDetails(bookingStorage.findFirstByItem_IdAndItem_Owner_IdAndStartIsAfterAndStatusIsNot(
+        BookingDetails nextBooking = BookingMapper
+                .toBookingDetails(bookingStorage.findFirstByItem_IdAndItem_Owner_IdAndStartIsAfterAndStatusIsNot(
                         itemID,
                         userId,
                         now,
