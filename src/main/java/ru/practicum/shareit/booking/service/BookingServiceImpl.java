@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class BookingServiceImpl implements BookingService{
+public class BookingServiceImpl implements BookingService {
     protected final UserServiceDB userServiceDB;
     protected final ItemServiceDB itemServiceDB;
     private final BookingRepository bookingRepository;
