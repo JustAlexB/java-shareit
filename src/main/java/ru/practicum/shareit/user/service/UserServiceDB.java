@@ -27,11 +27,12 @@ public class UserServiceDB {
         return userStorage.getAll();
     }
 
-    public Optional<User> getUserByID(Integer userID) {
+    public Optional<User> getUserByID(Long userID) {
         return userStorage.getByID(userID);
     }
 
     public User create(User user) {
+        validation(user);
         return userStorage.create(user);
     }
 
@@ -39,7 +40,7 @@ public class UserServiceDB {
         return userStorage.update(user);
     }
 
-    public void delUserByID(Integer userID) {
+    public void delUserByID(Long userID) {
         userStorage.delByID(userID);
     }
 

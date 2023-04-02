@@ -23,7 +23,7 @@ public class InMemoryUserStorage extends InMemoryStorage<User> {
 
     @Override
     public User update(User user) {
-        Integer currentUserID = user.getId();
+        Long currentUserID = user.getId();
         if (elements.containsKey(currentUserID)) {
             User foundUser = elements.get(currentUserID);
             User updatableUser = new User(foundUser.getId(), foundUser.getName(), foundUser.getEmail());
@@ -41,11 +41,11 @@ public class InMemoryUserStorage extends InMemoryStorage<User> {
         }
     }
 
-    public Optional<User> getUserByID(Integer userID) {
+    public Optional<User> getUserByID(Long userID) {
         return getByID(userID);
     }
 
-    public Optional<User> delUserByID(Integer userID) {
+    public Optional<User> delUserByID(Long userID) {
         return delByID(userID);
     }
 
@@ -54,7 +54,7 @@ public class InMemoryUserStorage extends InMemoryStorage<User> {
         if (user.getEmail() == null) {
             throw new IncorrectParameterException("email");
         }
-        for (Map.Entry<Integer, User> entry : elements.entrySet()) {
+        for (Map.Entry<Long, User> entry : elements.entrySet()) {
             if (user.equals(entry.getValue())) {
                 log.info("Пользователь {} не будет добавлен.", user);
                 throw new ValidationException("Пользователь с таким email уже существует.", user);

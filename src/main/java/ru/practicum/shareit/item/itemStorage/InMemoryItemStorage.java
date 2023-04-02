@@ -29,12 +29,12 @@ public class InMemoryItemStorage extends InMemoryStorage<Item> {
         return item;
     }
 
-    public Optional<Item> getByID(Integer itemID) {
+    public Optional<Item> getByID(Long itemID) {
         return super.getByID(itemID);
     }
 
     @Override
-    public Optional<Item> delByID(Integer itemID) {
+    public Optional<Item> delByID(Long itemID) {
         return super.delByID(itemID);
     }
 

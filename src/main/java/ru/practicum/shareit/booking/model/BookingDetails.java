@@ -1,11 +1,14 @@
 package ru.practicum.shareit.booking.model;
+import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-public interface BookingDetails {
-    Integer getId();
-
-    Integer getBookerId();
-
-    LocalDateTime getBookingDate();
+@Data
+@Builder
+public class BookingDetails {
+    private Long id;
+    private Long bookerId;
+    private LocalDateTime start;
+    private LocalDateTime end;
 }

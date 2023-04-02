@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 
 @Data
 public class BookingDto {
-    Integer itemId;
+    Long itemId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime start;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime end;
 
-    public BookingDto(Integer itemId, LocalDateTime start, LocalDateTime end) {
+    public BookingDto(Long itemId, LocalDateTime start, LocalDateTime end) {
         this.itemId = itemId;
         this.start = start;
         this.end = end;

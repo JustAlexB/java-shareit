@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable("userId") Integer userID) {
+    public User getUserById(@PathVariable("userId") Long userID) {
         log.info("Запрос пользователя по ID: {}", userID);
         Optional<User> fondUser = userService.getUserByID(userID);
         if (fondUser.isEmpty()) {
@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public void delUserById(@PathVariable("userId") Integer userID) {
+    public void delUserById(@PathVariable("userId") Long userID) {
         log.info("Запрос удаления пользователя по ID: {}", userID);
         userService.delUserByID(userID);
     }
@@ -68,7 +68,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public User updateById(@PathVariable("userId") Integer userID, @RequestBody UserDto userUpdate) {
+    public User updateById(@PathVariable("userId") Long userID, @RequestBody UserDto userUpdate) {
         if (userID != null && userID >= 0) {
             userUpdate.setId(userID);
             User userFromDto = toUserFromDto(userUpdate);

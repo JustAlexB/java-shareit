@@ -27,21 +27,21 @@ public class ItemService {
         this.userStorage = userStorage;
     }
 
-    public Collection<Item> getAll(Integer userID) {
+    public Collection<Item> getAll(Long userID) {
         if (userID != null)
             return itemStorage.getAll().stream()
-                    .filter(i -> i.getOwner().getId() == userID)
+                    .filter(i -> i.getOwner().getId().equals(userID))
                     .collect(Collectors.toCollection(ArrayList::new));
 
         return itemStorage.getAll();
     }
 
-    public ItemDto getItemByID(Integer itemID) {
+    public ItemDto getItemByID(Long itemID) {
         ItemDto itemDto = ItemMapper.toItemDto(itemStorage.getByID(itemID).get());
         return itemDto;
     }
 
-    public ItemDto create(ItemDto itemDto, Integer userID) {
+    public ItemDto create(ItemDto itemDto, Long userID) {
         validation(itemDto);
         Optional<User> user = userStorage.getByID(userID);
         if (user.isEmpty()) {
@@ -53,7 +53,7 @@ public class ItemService {
         return itemDto;
     }
 
-    public ItemDto update(Integer itemID, Integer userID, ItemDto itemDto) {
+    public ItemDto update(Long itemID, Long userID, ItemDto itemDto) {
         Optional<User> user = userStorage.getByID(userID);
         Optional<Item> item = itemStorage.getByID(itemID);
         if (user.isEmpty() || item.isEmpty()) {
@@ -80,7 +80,7 @@ public class ItemService {
             return Collections.emptyList();
         }
         return itemStorage.getAll().stream()
-                .filter(i -> i.isAvailable())
+                .filter(Item::isAvailable)
                 .filter(i -> i.getName().toLowerCase().contains(query) || i.getDescription().toLowerCase().contains(query))
                 .collect(Collectors.toCollection(ArrayList::new));
     }

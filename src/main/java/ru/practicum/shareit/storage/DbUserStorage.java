@@ -45,12 +45,12 @@ public class DbUserStorage implements Storage<User> {
     }
 
     @Override
-    public Optional<User> getByID(Integer userID) {
+    public Optional<User> getByID(Long userID) {
         return userStorage.findById(userID);
     }
 
     @Override
-    public Optional<User> delByID(Integer userID) {
+    public Optional<User> delByID(Long userID) {
         userStorage.deleteById(userID);
         return Optional.empty();
     }

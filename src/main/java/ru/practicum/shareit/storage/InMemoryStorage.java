@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class InMemoryStorage<T> implements Storage<T> {
-    public HashMap<Integer, T> elements = new HashMap<>();
-    public Integer elementID = 0;
+    public HashMap<Long, T> elements = new HashMap<>();
+    public Long elementID = 0L;
 
     @Override
     public Collection<T> getAll() {
@@ -25,12 +25,12 @@ public class InMemoryStorage<T> implements Storage<T> {
     }
 
     @Override
-    public Optional<T> getByID(Integer elementID) {
+    public Optional<T> getByID(Long elementID) {
         return Optional.ofNullable(elements.get(elementID));
     }
 
     @Override
-    public Optional<T> delByID(Integer elementID) {
+    public Optional<T> delByID(Long elementID) {
         return Optional.ofNullable(elements.remove(elementID));
     }
 

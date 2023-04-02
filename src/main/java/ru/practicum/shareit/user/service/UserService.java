@@ -24,7 +24,7 @@ public class UserService {
         return userStorage.getAll();
     }
 
-    public Optional<User> getUserByID(Integer userID) {
+    public Optional<User> getUserByID(Long userID) {
         return userStorage.getByID(userID);
     }
 
@@ -38,7 +38,7 @@ public class UserService {
         return updatableUser;
     }
 
-    public Optional<User> delUserByID(Integer userID) {
+    public Optional<User> delUserByID(Long userID) {
         return userStorage.delByID(userID);
     }
 

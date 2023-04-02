@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,14 +16,15 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    Long id;
     @Column(nullable = false, length = 250)
     String text;
-    @Column(name = "author_name")
-    String authorName;
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    User author;
     LocalDateTime created;
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     Item item;
 

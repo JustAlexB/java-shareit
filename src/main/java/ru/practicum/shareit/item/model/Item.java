@@ -15,7 +15,7 @@ import java.util.Set;
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    Long id;
     @Column(nullable = false, length = 60)
     String name;
     @Column(nullable = false, length = 200)
@@ -25,9 +25,7 @@ public class Item {
     @JoinColumn(name = "owner_id")
     User owner;
     @Column(name = "request_id")
-    Integer requestID;
-    @OneToMany(mappedBy = "item", fetch = FetchType.EAGER)
-    Set<Comment> comments;
+    Long requestID;
 
     public Item() {
     }

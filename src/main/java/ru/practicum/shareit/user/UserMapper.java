@@ -6,8 +6,10 @@ import org.modelmapper.ModelMapper;
 
 public class UserMapper {
     public static UserDto toUserDto(User user) {
-        ModelMapper mapper = new ModelMapper();
-        return mapper.map(user, UserDto.class);
+        return UserDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail()).build();
     }
 
     public static User toUserFromDto(UserDto userDto) {

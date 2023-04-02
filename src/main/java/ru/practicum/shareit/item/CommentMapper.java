@@ -6,8 +6,12 @@ import ru.practicum.shareit.item.model.Comment;
 
 public class CommentMapper {
     public static CommentDto toCommentDto(Comment comment) {
-        ModelMapper mapper = new ModelMapper();
-        return mapper.map(comment, CommentDto.class);
+        return CommentDto.builder()
+                .id(comment.getId())
+                .authorName(comment.getAuthor().getName())
+                .text(comment.getText())
+                .created(comment.getCreated())
+                .build();
     }
 
     public static Comment toComment(CommentDto commentDto) {

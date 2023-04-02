@@ -10,16 +10,16 @@ import ru.practicum.shareit.user.model.User;
 import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     @Modifying
     @Query("update User u set u.email = ?1 where u.id = ?2")
-    void updateEmail(String email, int id);
+    void updateEmail(String email, Long id);
 
     @Transactional
     @Modifying
     @Query("update User u set u.name = ?1 where u.id = ?2")
-    void updateName(String name, int id);
+    void updateName(String name, Long id);
 
     @Query("select u from User u " +
             "where upper(u.email) like upper(concat('%', ?1, '%'))")

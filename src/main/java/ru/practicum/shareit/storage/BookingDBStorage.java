@@ -38,12 +38,12 @@ public class BookingDBStorage implements Storage<Booking> {
     }
 
     @Override
-    public Optional<Booking> getByID(Integer bookingID) {
+    public Optional<Booking> getByID(Long bookingID) {
         return bookingStorage.findById(bookingID);
     }
 
     @Override
-    public Optional<Booking> delByID(Integer bookingID) {
+    public Optional<Booking> delByID(Long bookingID) {
         bookingStorage.deleteById(bookingID);
         return Optional.empty();
     }

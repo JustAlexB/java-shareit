@@ -10,9 +10,9 @@ public interface Storage<T> {
 
     T update(T element);
 
-    Optional<T> getByID(Integer elementID);
+    Optional<T> getByID(Long elementID);
 
-    Optional<T> delByID(Integer elementID);
+    Optional<T> delByID(Long elementID);
 
     void validation(T element);
 }
