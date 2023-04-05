@@ -26,7 +26,10 @@ import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
 @Slf4j
@@ -35,7 +38,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userStorage;
     private final BookingRepository bookingStorage;
     private final CommentRepository commentStorage;
-    private static final Sort SORT_DESC = Sort.by(Sort.Direction.DESC, "end");
+    private static final Sort SORT_DESC = Sort.by(DESC, "end");
     private static final Sort SORT_ASC = Sort.by(Sort.Direction.ASC, "start");
 
 
@@ -52,90 +55,77 @@ public class ItemServiceImpl implements ItemService {
         if (!userStorage.existsById(userId)) {
             throw new NotFoundException("Пользователь с ID =  " + userId + " не найден");
         }
-
         List<Item> items = itemStorage.findByOwner_Id(userId);
-        List<Long> itemsId = items
-                .stream()
-                .map(Item::getId)
-                .collect(Collectors.toList());
-        List<Comment> allComments = commentStorage.findAllByItemsId(itemsId);
 
-        List<Booking> allLastBookings = bookingStorage
-                .findFirstByItem_IdInAndItem_Owner_IdAndStartIsBefore(
-                        itemsId,
-                        userId,
-                        LocalDateTime.now(),
-                        SORT_DESC);
+        return getItemsAnswers(items);
+    }
 
-        List<Booking> allNextBookings = bookingStorage
-                .findFirstByItem_IdInAndItem_Owner_IdAndStartIsAfterAndStatusIsNot(
-                        itemsId,
-                        userId,
-                        LocalDateTime.now(),
-                        BookingStatus.REJECTED,
-                        SORT_ASC);
-
+    private Collection<ItemAnswerDto> getItemsAnswers(List<Item> items) {
         Map<Long, BookingDetails> lastBooking = new HashMap<>();
-        Map<Long, Booking> nextBooking = new HashMap<>();
+        Map<Long, BookingDetails> nextBooking = new HashMap<>();
         Map<Long, List<Comment>> comments = new HashMap<>();
 
+        Map<Item, List<Booking>> approvedBookings =
+                bookingStorage.findApprovedForItems(items)
+                        .stream()
+                        .collect(groupingBy(Booking::getItem, toList()));
+        Map<Item, List<Comment>> commentsByItems =
+                commentStorage.findCommentsForItems(items)
+                        .stream()
+                        .collect(groupingBy(Comment::getItem, toList()));
 
-        itemsId.forEach(key -> {
-            allLastBookings.stream()
-                    .filter(booking -> booking.getItem().getId().equals(key))
-                    .findFirst()
-                    .map(BookingMapper::toBookingDetails)
-                    .ifPresent(booking -> lastBooking.put(key, booking));
-            allNextBookings.stream()
-                    .filter(booking -> booking.getItem().getId().equals(key))
-                    .findFirst()
-                    .ifPresent(booking -> nextBooking.put(key, booking));
-            List<Comment> valueOfComments = allComments.stream()
-                    .filter(comment -> Objects.equals(comment.getAuthor().getId(), key) && key != null)
-                    .collect(Collectors.toList());
-            comments.put(key, valueOfComments);
-        });
-
+        items.forEach(key -> {
+                    if (!approvedBookings.isEmpty()) {
+                        if (approvedBookings.containsKey(key)) {
+                            approvedBookings.get(key).stream()
+                                    .filter(b -> b.getItem().getId().equals(key.getId()))
+                                    .filter(b -> b.getStart().isBefore(LocalDateTime.now()))
+                                    .findFirst()
+                                    .map(BookingMapper::toBookingDetails)
+                                    .ifPresent(b -> lastBooking.put(key.getId(), b));
+                            approvedBookings.get(key).stream()
+                                    .filter(b -> b.getItem().getId().equals(key.getId()))
+                                    .filter(b -> b.getStart().isAfter(LocalDateTime.now()))
+                                    .reduce((first, second) -> second)
+                                    .map(BookingMapper::toBookingDetails)
+                                    .ifPresent(b -> nextBooking.put(key.getId(), b));
+                        }
+                    }
+                    comments.put(key.getId(), commentsByItems.isEmpty() ? Collections.emptyList() : commentsByItems.get(key));
+                }
+        );
 
         return items.stream()
                 .map(item -> ItemMapper.toAnswerItemDto(
                         item,
                         lastBooking.size() == 0 ? null : lastBooking.get(item.getId()),
-                        nextBooking.size() == 0 ? null : BookingMapper.toBookingDetails(nextBooking.get(item.getId())),
+                        nextBooking.size() == 0 ? null : nextBooking.get(item.getId()),
                         comments.get(item.getId())
                                 .stream()
                                 .map(CommentMapper::toCommentDto)
-                                .collect(Collectors.toList())))
-                .collect(Collectors.toList());
+                                .collect(toList())))
+                .collect(toList());
     }
 
     @Override
-    public ItemAnswerDto getItemByID(Long itemID, Long userId) {
-        Item item = itemStorage.findById(itemID)
-                .orElseThrow(() -> new NotFoundException("Вещь с ID = " + itemID + " не найдена"));
-        LocalDateTime now = LocalDateTime.now();
+    public ItemAnswerDto getItemByID(Long itemId, Long userId) {
+        Item item = itemStorage.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Вещь с ID = " + itemId + " не найдена"));
+
+        ItemAnswerDto nededItem = getItemsAnswers(itemStorage.findByIdAndOwner_Id(itemId, userId)).stream()
+                .findFirst()
+                .orElse(null);
 
         List<CommentDto> comments = commentStorage.findAllByItem_Id(item.getId())
                 .stream()
                 .map(CommentMapper::toCommentDto)
-                .collect(Collectors.toList());
+                .collect(toList());
 
-        BookingDetails lastBooking = BookingMapper
-                .toBookingDetails(bookingStorage.findFirstByItem_IdAndItem_Owner_IdAndStartIsBefore(
-                        itemID,
-                        userId,
-                        now,
-                        SORT_DESC));
-
-        BookingDetails nextBooking = BookingMapper
-                .toBookingDetails(bookingStorage.findFirstByItem_IdAndItem_Owner_IdAndStartIsAfterAndStatusIsNot(
-                        itemID,
-                        userId,
-                        now,
-                        BookingStatus.REJECTED,
-                        SORT_ASC));
-
-        return ItemMapper.toAnswerItemDto(item, lastBooking, nextBooking, comments);
+        if (nededItem == null) {
+            return ItemMapper.toAnswerItemDto(item, null, null, comments);
+        } else {
+            return ItemMapper.toAnswerItemDto(item, nededItem.getLastBooking(), nededItem.getNextBooking(), comments);
+        }
     }
 
     @Override

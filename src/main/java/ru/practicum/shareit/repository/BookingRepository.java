@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -85,6 +86,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     Booking findFirstByItem_IdAndItem_Owner_IdAndStartIsAfterAndStatusIsNot(
             Long itemId, Long userId, LocalDateTime start, BookingStatus status, Sort sort);
+
+    @Query("SELECT b FROM Booking b WHERE b.item in :items and b.status = 'APPROVED' ORDER BY b.start DESC")
+    List<Booking> findApprovedForItems(List<Item> items);
 
     boolean existsBookingByBooker_IdAndItem_IdAndStatusAndStartBefore(Long userId, Long itemId, BookingStatus status, LocalDateTime startDate);
 }

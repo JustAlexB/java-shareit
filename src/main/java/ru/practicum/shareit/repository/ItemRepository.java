@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             " or upper(i.description) like upper(concat('%', ?1, '%')) and i.available = true")
     List<Item> searchItem(String text);
 
-    List<Item> findALlByOwner(User user);
-
     List<Item> findByOwner_Id(Long userId);
+
+    List<Item> findByIdAndOwner_Id(Long Id, Long userId);
 }
