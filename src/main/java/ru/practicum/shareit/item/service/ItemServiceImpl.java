@@ -22,14 +22,14 @@ import ru.practicum.shareit.repository.CommentRepository;
 import ru.practicum.shareit.repository.ItemRepository;
 import ru.practicum.shareit.repository.UserRepository;
 import ru.practicum.shareit.user.model.User;
-import org.springframework.data.domain.Sort;
+
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static org.springframework.data.domain.Sort.Direction.DESC;
+
 
 @Service
 @Slf4j
@@ -38,9 +38,6 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userStorage;
     private final BookingRepository bookingStorage;
     private final CommentRepository commentStorage;
-    private static final Sort SORT_DESC = Sort.by(DESC, "end");
-    private static final Sort SORT_ASC = Sort.by(Sort.Direction.ASC, "start");
-
 
     @Autowired
     public ItemServiceImpl(ItemRepository itemStorage, UserRepository userStorage, BookingRepository bookingStorage, CommentRepository commentStorage) {
@@ -60,6 +57,7 @@ public class ItemServiceImpl implements ItemService {
         return getItemsAnswers(items);
     }
 
+    @Transactional(readOnly = true)
     private Collection<ItemAnswerDto> getItemsAnswers(List<Item> items) {
         Map<Long, BookingDetails> lastBooking = new HashMap<>();
         Map<Long, BookingDetails> nextBooking = new HashMap<>();

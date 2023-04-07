@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.Create;
+import ru.practicum.shareit.user.dto.Update;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.exceptions.NotFoundException;
@@ -48,7 +50,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@Validated @RequestBody UserDto userDto) {
+    public User create(@Validated(Create.class) @RequestBody UserDto userDto) {
         User user = UserMapper.toUserFromDto(userDto);
         userService.create(user);
         log.info("Добавлен пользователь {}", user);
@@ -56,7 +58,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@Validated @RequestBody UserDto userDto) {
+    public User update(@Validated(Update.class) @RequestBody UserDto userDto) {
         User user = UserMapper.toUserFromDto(userDto);
         if (userService.update(user) != null)
             log.info("Обновлен пользователь {}", user);

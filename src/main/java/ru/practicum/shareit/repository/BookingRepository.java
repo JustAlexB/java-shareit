@@ -1,6 +1,5 @@
 package ru.practicum.shareit.repository;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,43 +48,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b FROM Booking b WHERE b.item.owner.id = :userId AND b.status = 'REJECTED' ORDER BY b.start DESC")
     List<Booking> getAllForOwnerRejected(@Param("userId") Long userId);
-
-//    @Query(value = "select b.id as Id, b.booker_id as bookerId, b.start_date, b.end_date from bookings b " +
-//            "where b.item_id = ?1 and b.start_date < ?2 " +
-//            "order by b.start_date DESC LIMIT 1", nativeQuery = true)
-//    Booking getLastBooking(Long itemId, LocalDateTime now);
-//
-//    @Query(value = "select b.id as Id, b.booker_id as bookerId, b.start_date, b.end_date from bookings b " +
-//            "where b.item_id = ?1 and b.start_date > ?2 and not b.status = 'REJECTED'" +
-//            "order by b.start_date LIMIT 1", nativeQuery = true)
-//    Booking getNextBooking(Long itemId, LocalDateTime now);
-//
-//    @Query(value = "select b.id as Id, b.booker_id as bookerId, b.start_date as bookingDate from bookings b " +
-//            "where b.item_id in (?1) and b.start_date < ?2 " +
-//            "order by b.start_date DESC LIMIT 1", nativeQuery = true)
-//    List<BookingDetails> getLastBookings(List<Long> itemId, LocalDateTime now);
-//
-//    @Query(value = "select b.id as Id, b.booker_id as bookerId, b.start_date as bookingDate from bookings b " +
-//            "where b.item_id in (?1) and b.start_date > ?2 and not b.status = 'REJECTED'" +
-//            "order by b.start_date LIMIT 1", nativeQuery = true)
-//    List<BookingDetails> getNextBookings(List<Long> itemId, LocalDateTime now);
-//
-//    @Query(value = "select b.id as Id, b.booker_id as bookerId, b.start_date as bookingDate from bookings b " +
-//            "where b.item_id in (?1) and b.start_date < ?2 or (b.start_date > ?2 and not b.status = 'REJECTED')" +
-//            "order by b.start_date", nativeQuery = true)
-//    List<BookingDetails> getLastNextBookings(List<Long> itemId, LocalDateTime now);
-
-    List<Booking> findFirstByItem_IdInAndItem_Owner_IdAndStartIsBefore(
-            List<Long> itemsId, Long userId, LocalDateTime end, Sort sort);
-
-    List<Booking> findFirstByItem_IdInAndItem_Owner_IdAndStartIsAfterAndStatusIsNot(
-            List<Long> itemsId, Long userId, LocalDateTime start, BookingStatus status, Sort sort);
-
-    Booking findFirstByItem_IdAndItem_Owner_IdAndStartIsBefore(
-            Long itemId, Long userId, LocalDateTime end, Sort sort);
-
-    Booking findFirstByItem_IdAndItem_Owner_IdAndStartIsAfterAndStatusIsNot(
-            Long itemId, Long userId, LocalDateTime start, BookingStatus status, Sort sort);
 
     @Query("SELECT b FROM Booking b WHERE b.item in :items and b.status = 'APPROVED' ORDER BY b.start DESC")
     List<Booking> findApprovedForItems(List<Item> items);
