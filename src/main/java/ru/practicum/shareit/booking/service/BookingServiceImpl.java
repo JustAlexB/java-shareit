@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
@@ -20,6 +22,7 @@ import ru.practicum.shareit.repository.BookingRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceDB;
 
+import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,30 +48,60 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
+    private List<Booking> getListBookings(Long userId, String state, boolean byOwner) {
+        switch (state) {
+            case "CURRENT":
+                return byOwner ? bookingRepository.getAllForOwnerCurrent(userId) : bookingRepository.getAllByStateCurrent(userId);
+            case "PAST":
+                return byOwner ? bookingRepository.getAllForOwnerPast(userId) : bookingRepository.getAllByStatePast(userId);
+            case "FUTURE":
+                return byOwner ? bookingRepository.getAllForOwnerFuture(userId) : bookingRepository.getAllByStateFuture(userId);
+            case "WAITING":
+                return byOwner ? bookingRepository.getAllForOwnerWaiting(userId) : bookingRepository.getAllByStateWaiting(userId);
+            case "REJECTED":
+                return byOwner ? bookingRepository.getAllForOwnerRejected(userId) : bookingRepository.getAllByStateRejected(userId);
+            default:
+                return byOwner ? bookingRepository.getAllForOwnerAll(userId) : bookingRepository.getAllByStateAll(userId);
+        }
+    }
+
+    private Slice<Booking> getSliceBookings(Long userId, String state, PageRequest pageRequest, boolean byOwner) {
+        switch (state) {
+            case "CURRENT":
+                return byOwner ? bookingRepository.getAllForOwnerCurrent(userId, pageRequest) : bookingRepository.getAllByStateCurrent(userId, pageRequest);
+            case "PAST":
+                return byOwner ?bookingRepository.getAllForOwnerPast(userId, pageRequest) : bookingRepository.getAllByStatePast(userId, pageRequest);
+            case "FUTURE":
+                return byOwner ? bookingRepository.getAllForOwnerFuture(userId, pageRequest) : bookingRepository.getAllByStateFuture(userId, pageRequest);
+            case "WAITING":
+                return byOwner ? bookingRepository.getAllForOwnerWaiting(userId, pageRequest) : bookingRepository.getAllByStateWaiting(userId, pageRequest);
+            case "REJECTED":
+                return  byOwner ? bookingRepository.getAllForOwnerRejected(userId, pageRequest) : bookingRepository.getAllByStateRejected(userId, pageRequest);
+            default:
+                return byOwner ? bookingRepository.getAllForOwnerAll(userId, pageRequest) : bookingRepository.getAllByStateAll(userId, pageRequest);
+        }
+    }
+
     @Override
-    public Collection<BookingAnswerDto> getAllByState(Long userId, String state) {
-        List<Booking> allByState = new LinkedList<>();
+    public Collection<BookingAnswerDto> getAllByState(Long userId, String state, Integer from, Integer size) {
+        List<Booking> allByState = new ArrayList<>();
+        Slice<Booking> allByStateSlice;
         if (Arrays.stream(BookingState.values()).noneMatch(eState -> eState.name().equals(state))) {
             throw new UnsupportedStatusException("UNSUPPORTED_STATUS");
         }
-        switch (state) {
-            case "CURRENT":
-                allByState = bookingRepository.getAllByStateCurrent(userId);
-                break;
-            case "PAST":
-                allByState = bookingRepository.getAllByStatePast(userId);
-                break;
-            case "FUTURE":
-                allByState = bookingRepository.getAllByStateFuture(userId);
-                break;
-            case "WAITING":
-                allByState = bookingRepository.getAllByStateWaiting(userId);
-                break;
-            case "REJECTED":
-                allByState = bookingRepository.getAllByStateRejected(userId);
-                break;
-            default:
-                allByState = bookingRepository.getAllByStateAll(userId);
+        if (from == null && size == null) {
+            allByState = getListBookings(userId, state, false);
+        } else {
+            if ((from == 0 && size == 0) || (from < 0 || size < 0)) {
+                throw new IncorrectParameterException("Запрос без пагинации");
+            }
+            allByStateSlice = getSliceBookings(userId, state, PageRequest.of(from, size), false);
+            while (!allByStateSlice.hasContent() && allByStateSlice.getNumber() > 0) {
+                allByStateSlice = getSliceBookings(userId, state, PageRequest.of(allByStateSlice.getNumber() - 1, allByStateSlice.getSize(), allByStateSlice.getSort()), false);
+            }
+            return allByStateSlice.toList().stream()
+                    .map(BookingMapper::toBookingAnswerDto)
+                    .collect(Collectors.toList());
         }
         if (allByState.isEmpty()) {
             throw new NotFoundException("Неверные параметры запроса");
@@ -79,29 +112,25 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingAnswerDto> getAllForOwner(Long userId, String state) {
+    public Collection<BookingAnswerDto> getAllForOwner(Long userId, String state, Integer from, Integer size) {
         List<Booking> allForOwner = new LinkedList<>();
+        Slice<Booking> allByStateSlice;
         if (Arrays.stream(BookingState.values()).noneMatch(eState -> eState.name().equals(state))) {
             throw new UnsupportedStatusException("UNSUPPORTED_STATUS");
         }
-        switch (state) {
-            case "CURRENT":
-                allForOwner = bookingRepository.getAllForOwnerCurrent(userId);
-                break;
-            case "PAST":
-                allForOwner = bookingRepository.getAllForOwnerPast(userId);
-                break;
-            case "FUTURE":
-                allForOwner = bookingRepository.getAllForOwnerFuture(userId);
-                break;
-            case "WAITING":
-                allForOwner = bookingRepository.getAllForOwnerWaiting(userId);
-                break;
-            case "REJECTED":
-                allForOwner = bookingRepository.getAllForOwnerRejected(userId);
-                break;
-            default:
-                allForOwner = bookingRepository.getAllForOwnerAll(userId);
+        if (from == null && size == null) {
+            allForOwner = getListBookings(userId, state, true);
+        } else {
+            if ((from == 0 && size == 0) || (from < 0 || size < 0)) {
+                throw new IncorrectParameterException("Запрос без пагинации");
+            }
+            allByStateSlice = getSliceBookings(userId, state, PageRequest.of(from, size), true);
+            while (!allByStateSlice.hasContent() && allByStateSlice.getNumber() > 0) {
+                allByStateSlice = getSliceBookings(userId, state, PageRequest.of(allByStateSlice.getNumber() - 1, allByStateSlice.getSize(), allByStateSlice.getSort()), true);
+            }
+            return allByStateSlice.toList().stream()
+                    .map(BookingMapper::toBookingAnswerDto)
+                    .collect(Collectors.toList());
         }
         if (allForOwner.isEmpty()) {
             throw new NotFoundException("Неверные параметры запроса");

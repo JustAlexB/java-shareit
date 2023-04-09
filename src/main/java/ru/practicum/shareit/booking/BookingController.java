@@ -30,8 +30,8 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public BookingAnswerDto updateStatus(@PathVariable("bookingId") Long bookingId,
-                                @RequestParam(name = "approved") String approved,
-                                @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                         @RequestParam(name = "approved") String approved,
+                                         @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Запрос на подтверждение/отклонение статуса бронирования {}, владелец ID = {}, статус: {}",
                 bookingId, userId, approved);
         return bookingServiceImpl.updateStatus(bookingId, userId, approved);
@@ -39,22 +39,25 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public BookingAnswerDto getBooking(@PathVariable("bookingId") Long bookingId,
-                              @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                                       @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         return bookingServiceImpl.getBookingByID(bookingId, userId);
     }
 
     @GetMapping
     public Collection<BookingAnswerDto> getAllWithState(@RequestParam(name = "state", required = false, defaultValue = "ALL") String state,
-                                              @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                                        @RequestParam(name = "from", required = false) Integer from,
+                                                        @RequestParam(name = "size", required = false) Integer size,
+                                                        @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Запрос всех бронирований по статусу {}, пользователь ID = {}", state, userId);
-        return bookingServiceImpl.getAllByState(userId, state);
+        return bookingServiceImpl.getAllByState(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public Collection<BookingAnswerDto> getAllForOwner(@RequestParam(name = "state", required = false, defaultValue = "ALL") String state,
-                                              @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                                       @RequestParam(name = "from", required = false) Integer from,
+                                                       @RequestParam(name = "size", required = false) Integer size,
+                                                       @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Запрос всех бронирований по статусу {}, владелец ID = {}", state, userId);
-        return bookingServiceImpl.getAllForOwner(userId, state);
+        return bookingServiceImpl.getAllForOwner(userId, state, from, size);
     }
-
 }

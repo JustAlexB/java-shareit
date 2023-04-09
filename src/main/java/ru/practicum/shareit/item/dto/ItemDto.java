@@ -20,7 +20,7 @@ public class ItemDto {
     @NotNull
     Boolean available;
     User owner;
-    Long requestID;
+    Long requestId;
     BookingDetails lastBooking;
     BookingDetails nextBooking;
 }
