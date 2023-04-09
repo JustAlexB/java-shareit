@@ -22,7 +22,6 @@ import ru.practicum.shareit.repository.BookingRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceDB;
 
-import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,13 +69,13 @@ public class BookingServiceImpl implements BookingService {
             case "CURRENT":
                 return byOwner ? bookingRepository.getAllForOwnerCurrent(userId, pageRequest) : bookingRepository.getAllByStateCurrent(userId, pageRequest);
             case "PAST":
-                return byOwner ?bookingRepository.getAllForOwnerPast(userId, pageRequest) : bookingRepository.getAllByStatePast(userId, pageRequest);
+                return byOwner ? bookingRepository.getAllForOwnerPast(userId, pageRequest) : bookingRepository.getAllByStatePast(userId, pageRequest);
             case "FUTURE":
                 return byOwner ? bookingRepository.getAllForOwnerFuture(userId, pageRequest) : bookingRepository.getAllByStateFuture(userId, pageRequest);
             case "WAITING":
                 return byOwner ? bookingRepository.getAllForOwnerWaiting(userId, pageRequest) : bookingRepository.getAllByStateWaiting(userId, pageRequest);
             case "REJECTED":
-                return  byOwner ? bookingRepository.getAllForOwnerRejected(userId, pageRequest) : bookingRepository.getAllByStateRejected(userId, pageRequest);
+                return byOwner ? bookingRepository.getAllForOwnerRejected(userId, pageRequest) : bookingRepository.getAllByStateRejected(userId, pageRequest);
             default:
                 return byOwner ? bookingRepository.getAllForOwnerAll(userId, pageRequest) : bookingRepository.getAllByStateAll(userId, pageRequest);
         }

@@ -23,8 +23,8 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @Service
 public class RequestServiceImpl implements RequestService {
 
-    final private RequestRepository requestRepository;
-    final private UserRepository userRepository;
+    private final RequestRepository requestRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public RequestServiceImpl(RequestRepository requestRepository, UserRepository userRepository) {
