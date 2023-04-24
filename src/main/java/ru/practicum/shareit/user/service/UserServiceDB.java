@@ -7,10 +7,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.IncorrectParameterException;
 import ru.practicum.shareit.storage.Storage;
+import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,22 +26,26 @@ public class UserServiceDB {
         this.userStorage = userStorage;
     }
 
-    public Collection<User> getAll() {
+    public List<UserDto> getAll() {
         Sort sortById = Sort.by(Sort.Direction.ASC, "id");
-        return userStorage.getAll();
+        return userStorage.getAll().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     public Optional<User> getUserByID(Long userID) {
         return userStorage.getByID(userID);
     }
 
-    public User create(User user) {
+    public UserDto create(UserDto userDto) {
+        User user = UserMapper.toUserFromDto(userDto);
         validation(user);
-        return userStorage.create(user);
+        return UserMapper.toUserDto(userStorage.create(user));
     }
 
-    public User update(User user) {
-        return userStorage.update(user);
+    public UserDto update(UserDto userDto) {
+        User user = UserMapper.toUserFromDto(userDto);
+        return UserMapper.toUserDto(userStorage.update(user));
     }
 
     public void delUserByID(Long userID) {

@@ -7,7 +7,7 @@ import ru.practicum.shareit.exceptions.IncorrectParameterException;
 import ru.practicum.shareit.repository.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Primary
@@ -20,7 +20,7 @@ public class DbUserStorage implements Storage<User> {
     }
 
     @Override
-    public Collection<User> getAll() {
+    public List<User> getAll() {
         Sort sortById = Sort.by(Sort.Direction.ASC, "id");
         return userStorage.findAll(sortById);
     }

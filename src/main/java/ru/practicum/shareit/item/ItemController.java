@@ -8,10 +8,10 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
-import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/items")
@@ -20,7 +20,7 @@ public class ItemController {
     private final ItemServiceImpl itemService;
 
     @Autowired
-    public ItemController(UserService userService, ItemServiceImpl itemService) {
+    public ItemController(ItemServiceImpl itemService) {
         this.itemService = itemService;
     }
 
@@ -43,14 +43,14 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemAnswerDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemAnswerDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Запрос всех вещей владельца ID = {}", userId);
         return itemService.getAll(userId);
     }
 
     @GetMapping("/search")
-    public Collection<Item> searchItem(@RequestParam(name = "text", required = false) String query,
-                                       @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<Item> searchItem(@RequestParam(name = "text", required = false) String query,
+                                 @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Поиск вещи {} владельца ID = {}", query, userId);
         return itemService.searchItem(query.toLowerCase());
     }

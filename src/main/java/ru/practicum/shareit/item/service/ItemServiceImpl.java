@@ -48,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<ItemAnswerDto> getAll(Long userId) {
+    public List<ItemAnswerDto> getAll(Long userId) {
         if (!userStorage.existsById(userId)) {
             throw new NotFoundException("Пользователь с ID =  " + userId + " не найден");
         }
@@ -58,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Transactional(readOnly = true)
-    private Collection<ItemAnswerDto> getItemsAnswers(List<Item> items) {
+    private List<ItemAnswerDto> getItemsAnswers(List<Item> items) {
         Map<Long, BookingDetails> lastBooking = new HashMap<>();
         Map<Long, BookingDetails> nextBooking = new HashMap<>();
         Map<Long, List<Comment>> comments = new HashMap<>();
@@ -166,7 +166,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<Item> searchItem(String query) {
+    public List<Item> searchItem(String query) {
         if (query.isEmpty()) {
             return Collections.emptyList();
         }

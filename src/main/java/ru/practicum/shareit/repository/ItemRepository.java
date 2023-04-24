@@ -10,13 +10,11 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("select i from Item i " +
-            "where upper(i.name) like upper(concat('%', ?1, '%')) " +
-            " or upper(i.description) like upper(concat('%', ?1, '%')) and i.available = true")
+            "where (upper(i.name) like upper(concat('%', ?1, '%')) " +
+            " or upper(i.description) like upper(concat('%', ?1, '%'))) and i.available = true")
     List<Item> searchItem(String text);
 
     List<Item> findByOwner_Id(Long userId);
 
     List<Item> findByIdAndOwner_Id(Long id, Long userId);
-
-    List<Item> findAllByrequestIdNotNull();
 }

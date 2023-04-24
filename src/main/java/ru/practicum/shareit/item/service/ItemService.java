@@ -6,6 +6,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface ItemService {
     Collection<ItemAnswerDto> getAll(Long userId);
@@ -16,7 +17,7 @@ public interface ItemService {
 
     ItemDto update(Long itemID, Long userID, ItemDto itemDto);
 
-    Collection<Item> searchItem(String query);
+    List<Item> searchItem(String query);
 
     CommentDto addComment(CommentDto commentDto, Long itemId, Long userId);
 

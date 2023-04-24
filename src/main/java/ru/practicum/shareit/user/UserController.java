@@ -11,7 +11,8 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.service.UserServiceDB;
 
-import java.util.Collection;
+
+import java.util.List;
 import java.util.Optional;
 
 import static ru.practicum.shareit.user.UserMapper.*;
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> getAll() {
+    public List<UserDto> getAll() {
         return userService.getAll();
     }
 
@@ -50,38 +51,35 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@Validated(Create.class) @RequestBody UserDto userDto) {
-        User user = UserMapper.toUserFromDto(userDto);
-        userService.create(user);
-        log.info("Добавлен пользователь {}", user);
-        return user;
+    public UserDto create(@Validated(Create.class) @RequestBody UserDto userDto) {
+        UserDto createdUser = userService.create(userDto);
+        log.info("Добавлен пользователь {}", userDto);
+        return createdUser;
     }
 
     @PutMapping
-    public User update(@Validated(Update.class) @RequestBody UserDto userDto) {
-        User user = UserMapper.toUserFromDto(userDto);
-        if (userService.update(user) != null)
-            log.info("Обновлен пользователь {}", user);
+    public UserDto update(@Validated(Update.class) @RequestBody UserDto userDto) {
+        if (userService.update(userDto) != null)
+            log.info("Обновлен пользователь {}", userDto);
         else {
-            log.info("Пользователь {} не найден", user);
-            throw new NotFoundException("Пользователь " + user.toString() + " не найден");
+            log.info("Пользователь {} не найден", userDto);
+            throw new NotFoundException("Пользователь " + userDto.toString() + " не найден");
         }
-        return user;
+        return userDto;
     }
 
     @PatchMapping("/{userId}")
-    public User updateById(@PathVariable("userId") Long userID, @RequestBody UserDto userUpdate) {
+    public UserDto updateById(@PathVariable("userId") Long userID, @RequestBody UserDto userUpdate) {
         if (userID != null && userID >= 0) {
             userUpdate.setId(userID);
-            User userFromDto = toUserFromDto(userUpdate);
-            userFromDto = userService.update(userFromDto);
-            if (userFromDto != null)
-                log.info("Обновлен пользователь {}", userFromDto);
+            UserDto userUpdated = userService.update(userUpdate);
+            if (userUpdated != null)
+                log.info("Обновлен пользователь {}", userUpdated);
             else {
                 log.info("Пользователь {} не найден", userUpdate);
                 throw new NotFoundException("Пользователь " + userUpdate + " не найден");
             }
-            return userFromDto;
+            return userUpdated;
         } else {
             log.info("Указан некорректный ID пользователя {} ", userID);
             throw new NotFoundException("Некорректный ID пользователя");

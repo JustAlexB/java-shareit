@@ -12,17 +12,17 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class ItemDto {
-    Long id;
+    private Long id;
     @NotBlank
-    String name;
+    private String name;
     @NotBlank
-    String description;
+    private String description;
     @NotNull
-    Boolean available;
-    User owner;
-    Long requestId;
-    BookingDetails lastBooking;
-    BookingDetails nextBooking;
+    private Boolean available;
+    private User owner;
+    private Long requestId;
+    private BookingDetails lastBooking;
+    private BookingDetails nextBooking;
 }
 
 

@@ -111,7 +111,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingAnswerDto> getAllForOwner(Long userId, String state, Integer from, Integer size) {
+    public List<BookingAnswerDto> getAllForOwner(Long userId, String state, Integer from, Integer size) {
         List<Booking> allForOwner = new LinkedList<>();
         Slice<Booking> allByStateSlice;
         if (Arrays.stream(BookingState.values()).noneMatch(eState -> eState.name().equals(state))) {

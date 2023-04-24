@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.service.BookingServiceImpl;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -53,10 +54,10 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public Collection<BookingAnswerDto> getAllForOwner(@RequestParam(name = "state", required = false, defaultValue = "ALL") String state,
-                                                       @RequestParam(name = "from", required = false) Integer from,
-                                                       @RequestParam(name = "size", required = false) Integer size,
-                                                       @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<BookingAnswerDto> getAllForOwner(@RequestParam(name = "state", required = false, defaultValue = "ALL") String state,
+                                                 @RequestParam(name = "from", required = false) Integer from,
+                                                 @RequestParam(name = "size", required = false) Integer size,
+                                                 @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Запрос всех бронирований по статусу {}, владелец ID = {}", state, userId);
         return bookingServiceImpl.getAllForOwner(userId, state, from, size);
     }
