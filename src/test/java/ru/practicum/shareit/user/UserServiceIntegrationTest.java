@@ -45,7 +45,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     public void testUpdateUser() {
-       UserDto userDto = UserDto.builder()
+        UserDto userDto = UserDto.builder()
                 .id(1L)
                 .name("test userDto")
                 .email("testDto@ya.ru")
@@ -103,7 +103,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void testValidationUser(){
+    public void testValidationUser() {
         User user = new User();
         user.setName("test user");
         assertThrows(IncorrectParameterException.class, () -> userService.validation(user));

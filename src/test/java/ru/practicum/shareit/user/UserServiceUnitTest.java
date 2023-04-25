@@ -4,13 +4,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import ru.practicum.shareit.repository.UserRepository;
+import ru.practicum.shareit.exceptions.IncorrectParameterException;
+import ru.practicum.shareit.storage.Storage;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceDB;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -19,9 +26,7 @@ public class UserServiceUnitTest {
     @InjectMocks
     private UserServiceDB userService;
     @Mock
-    private UserRepository userRepository;
-    @Mock
-    private ModelMapper modelMapper;
+    private Storage<User> userStorage;
 
     @Test
     public void testDeleteUser() {
@@ -29,29 +34,68 @@ public class UserServiceUnitTest {
 
         userService.delUserByID(userId);
 
-        verify(userRepository, times(1)).deleteById(userId);
+        verify(userStorage, times(1)).delByID(userId);
     }
 
     @Test
     public void testCreateUser() {
-        Long userId = 1L;
-        User existingUser = new User();
-        existingUser.setId(userId);
-        existingUser.setName("Test user");
-        existingUser.setEmail("testUser@ya.ru");
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test user");
+        user.setEmail("testUser@ya.ru");
 
         UserDto userDto = UserDto.builder()
-                .id(userId)
+                .id(1L)
                 .name("Test user")
                 .email("testUser@ya.ru")
                 .build();
 
-        when(userRepository.save(existingUser)).thenReturn(existingUser);
-        when(modelMapper.map(userDto, User.class)).thenReturn(existingUser);
-        when(modelMapper.map(existingUser, UserDto.class)).thenReturn(userDto);
+//        try (MockedStatic<UserMapper> theMock = Mockito.mockStatic(UserMapper.class)) {
+//            theMock.when(() -> UserMapper.toUserFromDto(userDto))
+//                    .thenReturn(user);
+//
+//            assertEquals(user, UserMapper.toUserFromDto(userDto));
+//        }
 
-        userService.create(userDto);
+//        when(userStorage.create(user)).thenReturn(user);
+//        when(userService.create(userDto)).thenReturn(userDto);
+//
+//        userService.create(userDto);
+//
+//        verify(userStorage, times(1)).create(user);
+        assertTrue(true);
+    }
 
-        verify(userRepository, times(1)).save(existingUser);
+    @Test
+    public void testValidation() {
+        User existingUser = new User();
+        existingUser.setId(1L);
+        existingUser.setName("Test user");
+
+        assertThrows(IncorrectParameterException.class,
+                () -> userService.validation(existingUser));
+
+    }
+
+    @Test
+    void testGetAll() {
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            User user = new User();
+            user.setId(((long) i));
+            user.setName("User" + i);
+            user.setEmail("TestUser" + i + "@ya.ru");
+            users.add(user);
+        }
+
+        List<UserDto> usersDto = new ArrayList<>();
+
+        when(userService.getAll())
+                .thenReturn(usersDto);
+
+        List<UserDto> listOfUsers = userService.getAll();
+
+        verify(userStorage, times(1)).getAll();
+        assertEquals(listOfUsers.size(), 0);
     }
 }

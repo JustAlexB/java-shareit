@@ -7,13 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import ru.practicum.shareit.item.CommentMapper;
-import ru.practicum.shareit.item.ItemMapper;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemAnswerDto;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.repository.CommentRepository;
 import ru.practicum.shareit.repository.ItemRepository;
 import ru.practicum.shareit.repository.RequestRepository;
@@ -182,70 +176,6 @@ class ShareItTests {
                 .thenReturn(items);
         List<Item> returnedItems = itemRepository.findByOwner_Id(user.getId());
         Assertions.assertEquals(returnedItems.size(), 2);
-
-    }
-
-    @Test
-    void testGetItemById() {
-        //        List<Item> items = new ArrayList<>();
-//        List<Comment> comments = new ArrayList<>();
-//
-//        User user = new User();
-//        user.setId(1L);
-//        user.setName("Test User");
-//        user.setEmail("test@test.ru");
-//
-//        Item item = new Item();
-//        item.setId(1L);
-//        item.setName("Test item1");
-//        item.setOwner(user);
-//
-//        Item item1 = new Item();
-//        item1.setId(2L);
-//        item1.setName("Test item2");
-//        item1.setOwner(user);
-//
-//        items.add(item1);
-//        items.add(item);
-//
-//        Comment comment = new Comment();
-//        comment.setId(1L);
-//        comment.setAuthor(user);
-//        comment.setItem(item);
-//        comment.setText("test comment");
-//
-//
-//        Mockito
-//                .when(commentRepository.save(Mockito.any(Comment.class)))
-//                .thenReturn(comment);
-//        Comment returnedComment = commentRepository.save(comment);
-//        Assertions.assertNotNull(returnedComment);
-//
-//        Mockito
-//                .when(itemRepository.findByOwner_Id(Mockito.anyLong()))
-//                .thenReturn(items);
-//        List<Item> returnedItems = itemRepository.findByOwner_Id(user.getId());
-//        Assertions.assertEquals(returnedItems.size(), 2);
-//
-//        Mockito
-//                .when(commentRepository.findAllByItem_Id(Mockito.anyLong()))
-//                .thenReturn(comments);
-//        List<Comment> returnedComments = commentRepository.findAllByItem_Id(returnedItems.get(1).getId());
-//        Assertions.assertEquals(returnedComments.get(0).getItem(), item);
-//
-//        List<CommentDto> collectComments = comments.stream()
-//                .map(CommentMapper::toCommentDto)
-//                .collect(toList());
-//
-//        Mockito
-//                .when(itemRepository.findByIdAndOwner_Id(Mockito.anyLong(), Mockito.anyLong()))
-//                .thenReturn(items);
-//        returnedItems = itemRepository.findByIdAndOwner_Id(returnedItems.get(1).getId(), user.getId());
-//        ItemAnswerDto answerItemDto = ItemMapper.toAnswerItemDto(returnedItems.get(1), null, null, collectComments);
-//        Assertions.assertEquals(returnedItems.size(), 1);
-//        Assertions.assertEquals(answerItemDto.getComments().size(), 1);
-
-
 
     }
 
