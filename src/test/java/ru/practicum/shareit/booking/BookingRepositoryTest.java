@@ -57,6 +57,7 @@ public class BookingRepositoryTest {
         booking1.setStatus(BookingStatus.REJECTED);
         booking1.setStart(now.minusDays(2));
         booking1.setEnd(now.minusHours(2));
+        booking1.setItem(savedItem);
         bookingRepository.save(booking1);
 
         Booking booking2 = new Booking();
@@ -72,6 +73,7 @@ public class BookingRepositoryTest {
         booking3.setStart(now.plusDays(6));
         booking3.setEnd(now.plusDays(2));
         booking3.setStatus(BookingStatus.WAITING);
+        booking3.setItem(savedItem);
         bookingRepository.save(booking3);
 
         List<Booking> bookings = bookingRepository.getAllByStateAll(user.getId());
@@ -114,6 +116,7 @@ public class BookingRepositoryTest {
         booking1.setStatus(BookingStatus.REJECTED);
         booking1.setStart(now.minusDays(1));
         booking1.setEnd(now.minusHours(1));
+        booking1.setItem(savedItem);
         bookingRepository.save(booking1);
 
         Booking booking2 = new Booking();
@@ -128,6 +131,7 @@ public class BookingRepositoryTest {
         booking3.setBooker(user);
         booking3.setStart(now.plusDays(3));
         booking3.setEnd(now.plusDays(1));
+        booking3.setItem(savedItem);
         booking3.setStatus(BookingStatus.WAITING);
         bookingRepository.save(booking3);
 
