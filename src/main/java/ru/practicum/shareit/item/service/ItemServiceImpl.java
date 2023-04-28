@@ -38,13 +38,17 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userStorage;
     private final BookingRepository bookingStorage;
     private final CommentRepository commentStorage;
+    protected final ItemMapper itemMapper;
+    protected final BookingMapper bookingMapper;
 
     @Autowired
-    public ItemServiceImpl(ItemRepository itemStorage, UserRepository userStorage, BookingRepository bookingStorage, CommentRepository commentStorage) {
+    public ItemServiceImpl(ItemRepository itemStorage, UserRepository userStorage, BookingRepository bookingStorage, CommentRepository commentStorage, ItemMapper itemMapper, BookingMapper bookingMapper) {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
         this.bookingStorage = bookingStorage;
         this.commentStorage = commentStorage;
+        this.itemMapper = itemMapper;
+        this.bookingMapper = bookingMapper;
     }
 
     @Override
@@ -79,13 +83,13 @@ public class ItemServiceImpl implements ItemService {
                                     .filter(b -> b.getItem().getId().equals(key.getId()))
                                     .filter(b -> b.getStart().isBefore(LocalDateTime.now()))
                                     .findFirst()
-                                    .map(BookingMapper::toBookingDetails)
+                                    .map(bookingMapper::toBookingDetails)
                                     .ifPresent(b -> lastBooking.put(key.getId(), b));
                             approvedBookings.get(key).stream()
                                     .filter(b -> b.getItem().getId().equals(key.getId()))
                                     .filter(b -> b.getStart().isAfter(LocalDateTime.now()))
                                     .reduce((first, second) -> second)
-                                    .map(BookingMapper::toBookingDetails)
+                                    .map(bookingMapper::toBookingDetails)
                                     .ifPresent(b -> nextBooking.put(key.getId(), b));
                         }
                     }
@@ -94,7 +98,7 @@ public class ItemServiceImpl implements ItemService {
         );
 
         return items.stream()
-                .map(item -> ItemMapper.toAnswerItemDto(
+                .map(item -> itemMapper.toAnswerItemDto(
                         item,
                         lastBooking.size() == 0 ? null : lastBooking.get(item.getId()),
                         nextBooking.size() == 0 ? null : nextBooking.get(item.getId()),
@@ -121,9 +125,9 @@ public class ItemServiceImpl implements ItemService {
                 .collect(toList());
 
         if (nededItem == null) {
-            return ItemMapper.toAnswerItemDto(item, null, null, comments);
+            return itemMapper.toAnswerItemDto(item, null, null, comments);
         } else {
-            return ItemMapper.toAnswerItemDto(item, nededItem.getLastBooking(), nededItem.getNextBooking(), comments);
+            return itemMapper.toAnswerItemDto(item, nededItem.getLastBooking(), nededItem.getNextBooking(), comments);
         }
     }
 
@@ -135,8 +139,8 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Не найден пользователь по ID = " + userID);
         }
         itemDto.setOwner(user.get());
-        Item item = ItemMapper.toItem(itemDto);
-        itemDto = ItemMapper.toItemDto(itemStorage.save(item));
+        Item item = itemMapper.toItem(itemDto);
+        itemDto = itemMapper.toItemDto(itemStorage.save(item));
         return itemDto;
     }
 
@@ -162,7 +166,7 @@ public class ItemServiceImpl implements ItemService {
         }
         itemStorage.save(item.get());
 
-        return ItemMapper.toItemDto(itemStorage.findById(itemID).get());
+        return itemMapper.toItemDto(itemStorage.findById(itemID).get());
     }
 
     @Override

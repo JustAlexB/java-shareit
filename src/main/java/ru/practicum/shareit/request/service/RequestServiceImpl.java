@@ -25,11 +25,13 @@ public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final RequestMapper requestMapper;
 
     @Autowired
-    public RequestServiceImpl(RequestRepository requestRepository, UserRepository userRepository) {
+    public RequestServiceImpl(RequestRepository requestRepository, UserRepository userRepository, RequestMapper requestMapper) {
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
+        this.requestMapper = requestMapper;
     }
 
     @Transactional
@@ -39,8 +41,8 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         itemRequestDto.setRequestor(user);
         itemRequestDto.setCreated(LocalDateTime.now());
-        ItemRequest itemRequest = RequestMapper.toItemReques(itemRequestDto);
-        return RequestMapper.toItemRequestDto(requestRepository.save(itemRequest));
+        ItemRequest itemRequest = requestMapper.toItemReques(itemRequestDto);
+        return requestMapper.toItemRequestDto(requestRepository.save(itemRequest));
 
     }
 
@@ -50,7 +52,7 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (from == null && size == null) {
             return requestRepository.findAllByRequestor(user, Sort.by(DESC, "created")).stream()
-                    .map(RequestMapper::toItemRequestDto)
+                    .map(requestMapper::toItemRequestDto)
                     .collect(Collectors.toList());
         }
         if ((from == 0 && size == 0) || (from < 0 || size < 0)) {
@@ -58,7 +60,7 @@ public class RequestServiceImpl implements RequestService {
         }
         return requestRepository.findAllByRequestorNot(user, PageRequest.of(from, size, Sort.by("created").ascending()))
                 .stream()
-                .map(RequestMapper::toItemRequestDto)
+                .map(requestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
     }
 
@@ -69,7 +71,7 @@ public class RequestServiceImpl implements RequestService {
         }
         ItemRequest request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Запрос по ID = " + requestId + " не найден"));
-        return RequestMapper.toItemRequestDto(request);
+        return requestMapper.toItemRequestDto(request);
     }
 
     @Override
@@ -79,7 +81,7 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         List<ItemRequest> myRequests = requestRepository.findAllByRequestor(user, Sort.by(DESC, "created"));
         return myRequests.stream()
-                .map(RequestMapper::toItemRequestDto)
+                .map(requestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
     }
 }

@@ -31,19 +31,22 @@ public class BookingServiceImpl implements BookingService {
     protected final UserServiceDB userServiceDB;
     protected final ItemServiceImpl itemServiceImpl;
     private final BookingRepository bookingRepository;
-
+    protected final ItemMapper itemMapper;
+    protected final BookingMapper bookingMapper;
 
     @Autowired
-    public BookingServiceImpl(UserServiceDB userServiceDB, ItemServiceImpl itemServiceImpl, BookingRepository bookingRepository) {
+    public BookingServiceImpl(UserServiceDB userServiceDB, ItemServiceImpl itemServiceImpl, BookingRepository bookingRepository, ItemMapper itemMapper, BookingMapper bookingMapper) {
         this.userServiceDB = userServiceDB;
         this.itemServiceImpl = itemServiceImpl;
         this.bookingRepository = bookingRepository;
+        this.itemMapper = itemMapper;
+        this.bookingMapper = bookingMapper;
     }
 
     @Override
     public Collection<BookingAnswerDto> getAll() {
         return bookingRepository.findAll().stream()
-                .map(BookingMapper::toBookingAnswerDto)
+                .map(bookingMapper::toBookingAnswerDto)
                 .collect(Collectors.toList());
     }
 
@@ -99,14 +102,14 @@ public class BookingServiceImpl implements BookingService {
                 allByStateSlice = getSliceBookings(userId, state, PageRequest.of(allByStateSlice.getNumber() - 1, allByStateSlice.getSize(), allByStateSlice.getSort()), false);
             }
             return allByStateSlice.toList().stream()
-                    .map(BookingMapper::toBookingAnswerDto)
+                    .map(bookingMapper::toBookingAnswerDto)
                     .collect(Collectors.toList());
         }
         if (allByState.isEmpty()) {
             throw new NotFoundException("Неверные параметры запроса");
         }
         return allByState.stream()
-                .map(BookingMapper::toBookingAnswerDto)
+                .map(bookingMapper::toBookingAnswerDto)
                 .collect(Collectors.toList());
     }
 
@@ -128,14 +131,14 @@ public class BookingServiceImpl implements BookingService {
                 allByStateSlice = getSliceBookings(userId, state, PageRequest.of(allByStateSlice.getNumber() - 1, allByStateSlice.getSize(), allByStateSlice.getSort()), true);
             }
             return allByStateSlice.toList().stream()
-                    .map(BookingMapper::toBookingAnswerDto)
+                    .map(bookingMapper::toBookingAnswerDto)
                     .collect(Collectors.toList());
         }
         if (allForOwner.isEmpty()) {
             throw new NotFoundException("Неверные параметры запроса");
         }
         return allForOwner.stream()
-                .map(BookingMapper::toBookingAnswerDto)
+                .map(bookingMapper::toBookingAnswerDto)
                 .collect(Collectors.toList());
     }
 
@@ -144,7 +147,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingID)
                 .orElseThrow(() -> new NotFoundException("Бронирование не найдено: " + bookingID));
         if (booking.getBooker().getId().equals(userID) || booking.getItem().getOwner().getId().equals(userID)) {
-            return BookingMapper.toBookingAnswerDto(booking);
+            return bookingMapper.toBookingAnswerDto(booking);
         } else {
             throw new NotFoundException("Пользователь не имеет доступа к бронированию: " + userID);
         }
@@ -153,10 +156,10 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingAnswerDto addBooking(BookingDto bookingDto, Long userID) {
-        Booking newBooking = BookingMapper.toBooking(bookingDto);
+        Booking newBooking = bookingMapper.toBooking(bookingDto);
         validation(newBooking);
         Optional<User> fUser = userServiceDB.getUserByID(userID);
-        Item fItem = ItemMapper.toItemFromAnswer(itemServiceImpl.getItemByID(bookingDto.getItemId(), userID));
+        Item fItem = itemMapper.toItemFromAnswer(itemServiceImpl.getItemByID(bookingDto.getItemId(), userID));
         if (fUser.isEmpty()) {
             throw new NotFoundException("Пользователь не найден");
         }
@@ -170,7 +173,7 @@ public class BookingServiceImpl implements BookingService {
         newBooking.setItem(fItem);
         newBooking.setBooker(fUser.get());
         newBooking.setId(null);
-        return BookingMapper.toBookingAnswerDto(bookingRepository.save(newBooking));
+        return bookingMapper.toBookingAnswerDto(bookingRepository.save(newBooking));
     }
 
     @Override
@@ -188,7 +191,7 @@ public class BookingServiceImpl implements BookingService {
         } else {
             fbooking.setStatus((BookingStatus.REJECTED));
         }
-        return BookingMapper.toBookingAnswerDto(bookingRepository.save(fbooking));
+        return bookingMapper.toBookingAnswerDto(bookingRepository.save(fbooking));
     }
 
     private void validation(Booking booking) {

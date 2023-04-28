@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exceptions.IncorrectParameterException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemAnswerDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -41,6 +42,8 @@ public class ItemServiceUnitTest {
     private BookingRepository bookingRepository;
     @Mock
     private CommentRepository commentRepository;
+    @Mock
+    private ItemMapper itemMapper;
 
     @Test
     public void testAddComment() {
@@ -75,6 +78,63 @@ public class ItemServiceUnitTest {
     }
 
     @Test
+    public void testCreateItemSuccess() {
+        User user = new User();
+        user.setId(1L);
+        user.setName("Alex");
+        user.setEmail("test@ya.ru");
+
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(1L);
+        itemDto.setName("Дрель");
+        itemDto.setDescription("универсальная дрель");
+        itemDto.setAvailable(true);
+
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("Дрель");
+        item.setDescription("универсальная дрель");
+        item.setAvailable(true);
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemMapper.toItemDto(any())).thenReturn(itemDto);
+        when(itemMapper.toItem(any())).thenReturn(item);
+
+        itemService.create(itemDto, user.getId());
+
+        verify(itemRepository, atLeastOnce()).save(item);
+    }
+
+    @Test
+    public void testUpdateItemSuccess() {
+        User user = new User();
+        user.setId(1L);
+        user.setName("Alex");
+        user.setEmail("test@ya.ru");
+
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(1L);
+        itemDto.setName("Дрель");
+        itemDto.setDescription("универсальная дрель");
+        itemDto.setAvailable(true);
+
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("Дрель");
+        item.setDescription("универсальная дрель");
+        item.setOwner(user);
+        item.setAvailable(true);
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(itemMapper.toItemDto(any())).thenReturn(itemDto);
+
+        itemService.update(item.getId(), user.getId(), itemDto);
+
+        verify(itemRepository, atLeastOnce()).save(item);
+    }
+
+    @Test
     public void testValidationItemDto() {
         ItemDto item1 = new ItemDto();
         item1.setName("Дрель");
@@ -82,7 +142,15 @@ public class ItemServiceUnitTest {
 
         assertThrows(IncorrectParameterException.class,
                 () -> itemService.validationItemDto(item1));
+    }
 
+    @Test
+    public void testValidationItemDtoSuccess() {
+        ItemDto item1 = new ItemDto();
+        item1.setName("Дрель");
+        item1.setDescription("универсальная дрель");
+        item1.setAvailable(true);
+        assertDoesNotThrow(() -> itemService.validationItemDto(item1));
     }
 
     @Test
@@ -106,31 +174,90 @@ public class ItemServiceUnitTest {
     }
 
     @Test
-    public void testGetAll() {
+    public void testValidationCommentSuccess() {
         User user = new User();
         user.setId(1L);
         user.setName("Alex");
         user.setEmail("test@ya.ru");
 
         Item item1 = new Item();
+        item1.setId(2L);
         item1.setName("Дрель");
         item1.setDescription("универсальная дрель");
         item1.setAvailable(true);
 
-        Item item2 = new Item();
-        item2.setName("Отвертка");
-        item2.setDescription("универсальная отвертка");
-        item2.setAvailable(true);
+        CommentDto commentDto = CommentDto.builder()
+                .text("не пустой")
+                .authorName("Alex")
+                .build();
 
-        List<Item> itemList = new ArrayList<>();
-        itemList.add(item1);
-        itemList.add(item2);
+        when(bookingRepository.existsBookingByBooker_IdAndItem_IdAndStatusAndStartBefore(anyLong(), anyLong(), any(), any())).thenReturn(true);
+
+        assertDoesNotThrow(() -> itemService.validationComment(commentDto, item1.getId(), user.getId()));
+    }
+
+    @Test
+    public void testGetAll() {
+        User user = new User();
+        user.setId(1L);
+        user.setName("Alex");
+        user.setEmail("test@ya.ru");
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+
+        itemService.getAll(user.getId());
+
+        verify(itemRepository, atLeastOnce()).findByOwner_Id(user.getId());
+    }
+
+    @Test
+    public void testGetAllFail() {
+        User user = new User();
+        user.setId(1L);
+        user.setName("Alex");
+        user.setEmail("test@ya.ru");
 
         when(userRepository.existsById(1L)).thenReturn(false);
-        //when(itemRepository.findByOwner_Id(1L)).thenReturn(itemList);
 
         assertThrows(NotFoundException.class,
-                () -> itemService.getAll(1L));
+                () -> itemService.getAll(user.getId()));
 
+    }
+
+    @Test
+    public void testGetItemById() {
+        User user = new User();
+        user.setId(1L);
+        user.setName("Alex");
+        user.setEmail("test@ya.ru");
+
+        Item item = new Item();
+        item.setId(2L);
+        item.setName("Дрель");
+        item.setDescription("универсальная дрель");
+        item.setAvailable(true);
+
+        ItemAnswerDto itemAnswerDto = new ItemAnswerDto();
+        itemAnswerDto.setId(1L);
+        itemAnswerDto.setName("Test name");
+        itemAnswerDto.setDescription("test desc");
+        itemAnswerDto.setAvailable(true);
+
+        List<Item> items = new ArrayList<>();
+        List<CommentDto> comments = new ArrayList<>();
+
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(itemMapper.toAnswerItemDto(any(), any(), any(), any())).thenReturn(itemAnswerDto);
+
+        ItemAnswerDto newAnswerDto = itemService.getItemByID(item.getId(), user.getId());
+
+        assertEquals(newAnswerDto, itemAnswerDto);
+    }
+
+    @Test
+    public void testGetItemByIdFail() {
+
+        assertThrows(NotFoundException.class,
+                () -> itemService.getItemByID(1L, 1L));
     }
 }

@@ -54,9 +54,6 @@ public class UserServiceIntegrationTest {
         UserDto updatedUser = userService.update(userDto);
 
         assertNotNull(updatedUser);
-        //assertEquals(userDto.getId(), updatedUser.getId());
-        //assertEquals(userDto.getName(), updatedUser.getName());
-        //assertEquals(userDto.getEmail(), updatedUser.getEmail());
     }
 
     @Test
@@ -66,7 +63,7 @@ public class UserServiceIntegrationTest {
         user.setEmail("test@ya.ru");
         User createdUser = userRepository.save(user);
 
-        userService.delUserByID(createdUser.getId());
+        assertDoesNotThrow(() -> userService.delUserByID(createdUser.getId()));
     }
 
     @Test

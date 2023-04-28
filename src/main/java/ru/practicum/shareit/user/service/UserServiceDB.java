@@ -19,16 +19,18 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceDB {
     private final Storage<User> userStorage;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserServiceDB(@Qualifier("dbUserStorage") Storage<User> userStorage) {
+    public UserServiceDB(@Qualifier("dbUserStorage") Storage<User> userStorage, UserMapper userMapper) {
         this.userStorage = userStorage;
+        this.userMapper = userMapper;
     }
 
     public List<UserDto> getAll() {
         Sort sortById = Sort.by(Sort.Direction.ASC, "id");
         return userStorage.getAll().stream()
-                .map(UserMapper::toUserDto)
+                .map(userMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
@@ -37,14 +39,14 @@ public class UserServiceDB {
     }
 
     public UserDto create(UserDto userDto) {
-        User user = UserMapper.toUserFromDto(userDto);
+        User user = userMapper.toUserFromDto(userDto);
         validation(user);
-        return UserMapper.toUserDto(userStorage.create(user));
+        return userMapper.toUserDto(userStorage.create(user));
     }
 
     public UserDto update(UserDto userDto) {
-        User user = UserMapper.toUserFromDto(userDto);
-        return UserMapper.toUserDto(userStorage.update(user));
+        User user = userMapper.toUserFromDto(userDto);
+        return userMapper.toUserDto(userStorage.update(user));
     }
 
     public void delUserByID(Long userID) {

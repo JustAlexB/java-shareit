@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class ItemServiceInMem {
     protected final Storage<Item> itemStorage;
     protected final Storage<User> userStorage;
+    protected final ItemMapper itemMapper = new ItemMapper();
 
     @Autowired
     public ItemServiceInMem(@Qualifier("inMemoryItemStorage") Storage<Item> itemStorage, Storage<User> userStorage) {
@@ -37,7 +38,7 @@ public class ItemServiceInMem {
     }
 
     public ItemDto getItemByID(Long itemID) {
-        ItemDto itemDto = ItemMapper.toItemDto(itemStorage.getByID(itemID).get());
+        ItemDto itemDto = itemMapper.toItemDto(itemStorage.getByID(itemID).get());
         return itemDto;
     }
 
@@ -48,8 +49,8 @@ public class ItemServiceInMem {
             throw new NotFoundException("Не найден пользователь по ID = " + userID);
         }
         itemDto.setOwner(user.get());
-        Item item = ItemMapper.toItem(itemDto);
-        itemDto = ItemMapper.toItemDto(itemStorage.create(item));
+        Item item = itemMapper.toItem(itemDto);
+        itemDto = itemMapper.toItemDto(itemStorage.create(item));
         return itemDto;
     }
 
@@ -71,7 +72,7 @@ public class ItemServiceInMem {
         if (itemDto.getAvailable() != null) {
             item.get().setAvailable(itemDto.getAvailable());
         }
-        itemDto = ItemMapper.toItemDto(itemStorage.update(item.get()));
+        itemDto = itemMapper.toItemDto(itemStorage.update(item.get()));
         return itemDto;
     }
 

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingAnswerDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
@@ -9,18 +10,19 @@ import org.modelmapper.ModelMapper;
 import ru.practicum.shareit.booking.model.BookingDetails;
 import ru.practicum.shareit.user.dto.UserDto;
 
+@Component
 public class BookingMapper {
-    public static BookingDto toBookingDto(Booking booking) {
+    public BookingDto toBookingDto(Booking booking) {
         ModelMapper mapper = new ModelMapper();
         return mapper.map(booking, BookingDto.class);
     }
 
-    public static Booking toBooking(BookingDto bookingDto) {
+    public Booking toBooking(BookingDto bookingDto) {
         ModelMapper mapper = new ModelMapper();
         return mapper.map(bookingDto, Booking.class);
     }
 
-    public static BookingDetails toBookingDetails(Booking booking) {
+    public BookingDetails toBookingDetails(Booking booking) {
         if (booking == null) {
             return null;
         }
@@ -33,7 +35,7 @@ public class BookingMapper {
 
     }
 
-    public static BookingAnswerDto toBookingAnswerDto(Booking booking) {
+    public BookingAnswerDto toBookingAnswerDto(Booking booking) {
         if (booking == null) {
             return null;
         }
