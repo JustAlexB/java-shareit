@@ -34,7 +34,6 @@ public class RequestServiceUnitTest {
     private RequestMapper requestMapper;
     @Mock
     UserRepository userRepository;
-
     private final LocalDateTime created = LocalDateTime.parse("2023-04-24T15:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
     @Test

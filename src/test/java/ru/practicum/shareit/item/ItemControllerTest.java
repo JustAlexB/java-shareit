@@ -23,8 +23,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,6 +49,26 @@ public class ItemControllerTest {
         when(itemService.create(eq(itemDto), anyLong())).thenReturn(itemDto);
 
         mockMvc.perform(post("/items")
+                        .header("X-Sharer-User-Id", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(itemDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(itemDto.getName()))
+                .andReturn();
+    }
+
+    @SneakyThrows
+    @Test
+    public void testUpdateById() {
+        ItemDto itemDto = ItemDto.builder()
+                .name("test item")
+                .description("test description")
+                .available(true)
+                .build();
+
+        when(itemService.update(anyLong(), anyLong(), any())).thenReturn(itemDto);
+
+        mockMvc.perform(patch("/items/" + 1L)
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(itemDto)))

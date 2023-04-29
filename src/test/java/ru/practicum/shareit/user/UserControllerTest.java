@@ -60,7 +60,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testUpdateUser() throws Exception {
+    public void testUpdateUserById() throws Exception {
         UserDto userDto = UserDto.builder()
                 .id(1L)
                 .name("test name")
@@ -68,6 +68,25 @@ public class UserControllerTest {
 
         when(userService.update(any(UserDto.class))).thenReturn(userDto);
         MvcResult mvcResult = mockMvc.perform(patch("/users/" + userDto.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDto)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        UserDto dtoResponse = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), UserDto.class);
+
+        assertEquals(userDto, dtoResponse);
+    }
+
+    @Test
+    public void testUpdateUser() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .id(1L)
+                .name("test name")
+                .build();
+
+        when(userService.update(any(UserDto.class))).thenReturn(userDto);
+        MvcResult mvcResult = mockMvc.perform(put("/users/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDto)))
                 .andExpect(status().isOk())
