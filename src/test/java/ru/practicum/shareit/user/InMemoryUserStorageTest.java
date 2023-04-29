@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class InMemoryUserStorageTest {
-    private final static InMemoryUserStorage userStorage = new InMemoryUserStorage();
+    private final InMemoryUserStorage userStorage = new InMemoryUserStorage();
 
     @Test
     void testValidationIncorrectParameter() {
