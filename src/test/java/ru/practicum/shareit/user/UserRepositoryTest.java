@@ -9,6 +9,7 @@ import ru.practicum.shareit.repository.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,6 +29,13 @@ public class UserRepositoryTest {
 
         assertFalse(createdUser.isEmpty());
         assertEquals(createdUser.get(0).getEmail(), user.getEmail());
+    }
+
+    @Test
+    public void testUserFindByEmailEmpty() {
+        List<User> savedUser = userRepository.findUserByEmail("test1@example.com");
+
+        assertTrue(savedUser.isEmpty());
     }
 
     @Test

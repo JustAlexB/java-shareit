@@ -60,6 +60,16 @@ public class UserControllerTest {
     }
 
     @Test
+    public void testCreateUserInvalidDto() throws Exception {
+        UserDto userDto = new UserDto();
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userDto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testUpdateUserById() throws Exception {
         UserDto userDto = UserDto.builder()
                 .id(1L)

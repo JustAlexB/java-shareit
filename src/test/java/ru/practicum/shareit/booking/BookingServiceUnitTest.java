@@ -273,13 +273,54 @@ public class BookingServiceUnitTest {
     }
 
     @Test
-    public void testGetAllForOwnerUnsupportedStatus() {
-        assertThrows(UnsupportedStatusException.class, () -> bookingService.getAllForOwner(1L, "UnKnown", 0, 1));
+    public void testGetAllForOwnerPage() {
+        LocalDateTime now = LocalDateTime.now();
+
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("Owner Name");
+        owner.setEmail("owner@yandex.ru");
+
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test Name");
+        user.setEmail("newtest@yandex.ru");
+
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("Дрель");
+        item.setDescription("ручная дерль СПААААСИТЕ");
+        item.setOwner(owner);
+        item.setAvailable(true);
+        item.setRequestId(null);
+
+        Booking booking = new Booking();
+        booking.setId(1L);
+        booking.setBooker(user);
+        booking.setItem(item);
+        booking.setStatus(BookingStatus.REJECTED);
+        booking.setStart(now.plusDays(2));
+        booking.setEnd(now.plusDays(3));
+
+
+        BookingAnswerDto bookingAnswerDto = new BookingAnswerDto();
+        bookingAnswerDto.setId(5L);
+
+        List<Booking> requestPage = new ArrayList<>();
+        requestPage.add(booking);
+
+        when(bookingRepository.getAllForOwnerRejected(anyLong())).thenReturn(requestPage);
+        when(bookingMapper.toBookingAnswerDto(booking)).thenReturn(bookingAnswerDto);
+
+        List<BookingAnswerDto> result = bookingService.getAllForOwner(owner.getId(), booking.getStatus().name(), null, null);
+
+        assertEquals(1, result.size());
+        assertEquals(5L, result.get(0).getId());
     }
 
     @Test
-    public void testGetAllByStateUnsupportedStatus() {
-        assertThrows(UnsupportedStatusException.class, () -> bookingService.getAllByState(1L, "UnKnown", 0, 1));
+    public void testGetAllForOwnerUnsupportedStatus() {
+        assertThrows(UnsupportedStatusException.class, () -> bookingService.getAllForOwner(1L, "UnKnown", 0, 1));
     }
 
     @Test
