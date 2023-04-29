@@ -9,7 +9,6 @@ import ru.practicum.shareit.repository.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
