@@ -22,6 +22,7 @@ import ru.practicum.shareit.repository.ItemRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -244,10 +245,12 @@ public class ItemServiceUnitTest {
         itemAnswerDto.setAvailable(true);
 
         List<Item> items = new ArrayList<>();
-        List<CommentDto> comments = new ArrayList<>();
+        List<Comment> comments = new ArrayList<>();
 
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(itemMapper.toAnswerItemDto(any(), any(), any(), any())).thenReturn(itemAnswerDto);
+        when(itemRepository.findByIdAndOwner_Id(anyLong(), anyLong())).thenReturn(items);
+        when(commentRepository.findAllByItem_Id(anyLong())).thenReturn(comments);
 
         ItemAnswerDto newAnswerDto = itemService.getItemByID(item.getId(), user.getId());
 
@@ -256,8 +259,29 @@ public class ItemServiceUnitTest {
 
     @Test
     public void testGetItemByIdFail() {
-
         assertThrows(NotFoundException.class,
                 () -> itemService.getItemByID(1L, 1L));
+    }
+
+    @Test
+    void testSearchItem() {
+        Item item = new Item();
+        item.setId(2L);
+        item.setName("Дрель");
+        item.setDescription("универсальная дрель");
+        item.setAvailable(true);
+
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+
+        when(itemRepository.searchItem(anyString())).thenReturn(items);
+
+        assertEquals(1, itemService.searchItem("дреЛь").size());
+        assertEquals(item.getId(), itemService.searchItem("дреЛь").get(0).getId());
+    }
+
+    @Test
+    void testSearchItemFail() {
+        assertEquals(Collections.emptyList(), itemService.searchItem(""));
     }
 }

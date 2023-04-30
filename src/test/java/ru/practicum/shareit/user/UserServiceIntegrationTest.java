@@ -57,6 +57,36 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
+    public void testUpdateUserName() {
+        UserDto userDto = UserDto.builder()
+                .name("test userDto")
+                .email("testDto@ya.ru")
+                .build();
+
+        UserDto updatedUser = userService.create(userDto);
+
+        updatedUser.setEmail("update Name");
+        updatedUser.setEmail(null);
+
+        assertNotNull(userService.update(updatedUser));
+    }
+
+    @Test
+    public void testUpdateUserEmail() {
+        UserDto userDto = UserDto.builder()
+                .name("test userDto")
+                .email("testDto@ya.ru")
+                .build();
+
+        UserDto updatedUser = userService.create(userDto);
+
+        updatedUser.setEmail("alex@ya.ru");
+        updatedUser.setName(null);
+
+        assertNotNull(userService.update(updatedUser));
+    }
+
+    @Test
     public void testDeleteUser() {
         User user = new User();
         user.setName("test user");

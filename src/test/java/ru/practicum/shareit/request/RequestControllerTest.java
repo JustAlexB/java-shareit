@@ -11,7 +11,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.exceptions.ConflictException;
+import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.UnsupportedStatusException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.RequestServiceImpl;
 import ru.practicum.shareit.user.model.User;
@@ -100,12 +104,39 @@ public class RequestControllerTest {
     }
 
     @Test
-    public void testGetRequestByIdNotFound() throws Exception {
+    public void testGetRequestByIdConflict() throws Exception {
         when(requestService.getRequestById(anyLong(), anyLong())).thenThrow(new ConflictException("not found"));
 
         mockMvc.perform(get("/requests/{requestId}", 1L)
                         .header("X-Sharer-User-Id", 2L))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void testGetRequestByIdValidation() throws Exception {
+        when(requestService.getRequestById(anyLong(), anyLong())).thenThrow(new ValidationException("for test", 1L));
+
+        mockMvc.perform(get("/requests/{requestId}", 1L)
+                        .header("X-Sharer-User-Id", 2L))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void testGetRequestByIdNotFound() throws Exception {
+        when(requestService.getRequestById(anyLong(), anyLong())).thenThrow(new NotFoundException("for test"));
+
+        mockMvc.perform(get("/requests/{requestId}", 1L)
+                        .header("X-Sharer-User-Id", 2L))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testGetRequestByIdUnSupportedStatus() throws Exception {
+        when(requestService.getRequestById(anyLong(), anyLong())).thenThrow(new UnsupportedStatusException("for test"));
+
+        mockMvc.perform(get("/requests/{requestId}", 1L)
+                        .header("X-Sharer-User-Id", 2L))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

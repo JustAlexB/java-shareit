@@ -5,12 +5,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Slice;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.practicum.shareit.booking.dto.BookingAnswerDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
+import ru.practicum.shareit.exceptions.BookingDataValidationException;
 import ru.practicum.shareit.exceptions.IncorrectParameterException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.UnsupportedStatusException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemAnswerDto;
@@ -23,7 +27,6 @@ import ru.practicum.shareit.user.service.UserServiceDB;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -263,13 +266,23 @@ public class BookingServiceUnitTest {
         List<Booking> requestPage = new ArrayList<>();
         requestPage.add(booking);
 
-        when(bookingRepository.getAllForOwnerRejected(anyLong())).thenReturn(requestPage);
         when(bookingMapper.toBookingAnswerDto(booking)).thenReturn(bookingAnswerDto);
+        when(bookingRepository.getAllForOwnerRejected(anyLong())).thenReturn(requestPage);
+        when(bookingRepository.getAllForOwnerWaiting(anyLong())).thenReturn(requestPage);
+        when(bookingRepository.getAllForOwnerFuture(anyLong())).thenReturn(requestPage);
+        when(bookingRepository.getAllForOwnerPast(anyLong())).thenReturn(requestPage);
+        when(bookingRepository.getAllForOwnerCurrent(anyLong())).thenReturn(requestPage);
+        when(bookingRepository.getAllForOwnerAll(anyLong())).thenReturn(requestPage);
 
-        List<BookingAnswerDto> result = bookingService.getAllForOwner(owner.getId(), booking.getStatus().name(), null, null);
 
-        assertEquals(1, result.size());
-        assertEquals(5L, result.get(0).getId());
+        assertAll(
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.REJECTED.name(), null, null).size()),
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.WAITING.name(), null, null).size()),
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.FUTURE.name(), null, null).size()),
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.PAST.name(), null, null).size()),
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.CURRENT.name(), null, null).size()),
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.ALL.name(), null, null).size())
+        );
     }
 
     @Test
@@ -298,7 +311,62 @@ public class BookingServiceUnitTest {
         booking.setId(1L);
         booking.setBooker(user);
         booking.setItem(item);
-        booking.setStatus(BookingStatus.REJECTED);
+        booking.setStatus(BookingStatus.WAITING);
+        booking.setStart(now.plusDays(2));
+        booking.setEnd(now.plusDays(3));
+
+
+        BookingAnswerDto bookingAnswerDto = new BookingAnswerDto();
+        bookingAnswerDto.setId(5L);
+
+        Slice<Booking> requestPage = new PageImpl<>(List.of(booking));
+        when(bookingMapper.toBookingAnswerDto(booking)).thenReturn(bookingAnswerDto);
+
+        when(bookingRepository.getAllForOwnerRejected(anyLong(), any())).thenReturn(requestPage);
+        when(bookingRepository.getAllForOwnerWaiting(anyLong(), any())).thenReturn(requestPage);
+        when(bookingRepository.getAllForOwnerFuture(anyLong(), any())).thenReturn(requestPage);
+        when(bookingRepository.getAllForOwnerPast(anyLong(), any())).thenReturn(requestPage);
+        when(bookingRepository.getAllForOwnerCurrent(anyLong(), any())).thenReturn(requestPage);
+        when(bookingRepository.getAllForOwnerAll(anyLong(), any())).thenReturn(requestPage);
+
+
+        assertAll(
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.REJECTED.name(), 0, 2).size()),
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.WAITING.name(), 0, 2).size()),
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.FUTURE.name(), 0, 2).size()),
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.PAST.name(), 0, 2).size()),
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.CURRENT.name(), 0, 2).size()),
+                () -> assertEquals(1, bookingService.getAllForOwner(owner.getId(), BookingState.ALL.name(), 0, 2).size())
+        );
+    }
+
+    @Test
+    public void testGetAllForOwnerPageIncorrectParameter() {
+        LocalDateTime now = LocalDateTime.now();
+
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("Owner Name");
+        owner.setEmail("owner@yandex.ru");
+
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test Name");
+        user.setEmail("newtest@yandex.ru");
+
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("Дрель");
+        item.setDescription("ручная дерль СПААААСИТЕ");
+        item.setOwner(owner);
+        item.setAvailable(true);
+        item.setRequestId(null);
+
+        Booking booking = new Booking();
+        booking.setId(1L);
+        booking.setBooker(user);
+        booking.setItem(item);
+        booking.setStatus(BookingStatus.WAITING);
         booking.setStart(now.plusDays(2));
         booking.setEnd(now.plusDays(3));
 
@@ -312,10 +380,7 @@ public class BookingServiceUnitTest {
         when(bookingRepository.getAllForOwnerRejected(anyLong())).thenReturn(requestPage);
         when(bookingMapper.toBookingAnswerDto(booking)).thenReturn(bookingAnswerDto);
 
-        List<BookingAnswerDto> result = bookingService.getAllForOwner(owner.getId(), booking.getStatus().name(), null, null);
-
-        assertEquals(1, result.size());
-        assertEquals(5L, result.get(0).getId());
+        assertThrows(IncorrectParameterException.class, () -> bookingService.getAllForOwner(owner.getId(), booking.getStatus().name(), 0, 0));
     }
 
     @Test
@@ -360,12 +425,77 @@ public class BookingServiceUnitTest {
         List<Booking> requestPage = new ArrayList<>();
         requestPage.add(booking);
 
+        when(bookingMapper.toBookingAnswerDto(booking)).thenReturn(bookingAnswerDto);
         when(bookingRepository.getAllByStateRejected(anyLong())).thenReturn(requestPage);
+        when(bookingRepository.getAllByStateWaiting(anyLong())).thenReturn(requestPage);
+        when(bookingRepository.getAllByStateFuture(anyLong())).thenReturn(requestPage);
+        when(bookingRepository.getAllByStatePast(anyLong())).thenReturn(requestPage);
+        when(bookingRepository.getAllByStateCurrent(anyLong())).thenReturn(requestPage);
+        when(bookingRepository.getAllByStateAll(anyLong())).thenReturn(requestPage);
+
+        assertAll(
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.REJECTED.name(), null, null).size()),
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.WAITING.name(), null, null).size()),
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.FUTURE.name(), null, null).size()),
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.PAST.name(), null, null).size()),
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.CURRENT.name(), null, null).size()),
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.ALL.name(), null, null).size())
+        );
+    }
+
+    @Test
+    public void testGetAllByStatePage() {
+        LocalDateTime now = LocalDateTime.now();
+
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("Owner Name");
+        owner.setEmail("owner@yandex.ru");
+
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test Name");
+        user.setEmail("newtest@yandex.ru");
+
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("Дрель");
+        item.setDescription("ручная дерль СПААААСИТЕ");
+        item.setOwner(owner);
+        item.setAvailable(true);
+        item.setRequestId(null);
+
+        Booking booking = new Booking();
+        booking.setId(1L);
+        booking.setBooker(user);
+        booking.setItem(item);
+        booking.setStatus(BookingStatus.REJECTED);
+        booking.setStart(now.plusDays(2));
+        booking.setEnd(now.plusDays(3));
+
+
+        BookingAnswerDto bookingAnswerDto = new BookingAnswerDto();
+        bookingAnswerDto.setId(5L);
+
+        Slice<Booking> requestPage = new PageImpl<>(List.of(booking));
+
         when(bookingMapper.toBookingAnswerDto(booking)).thenReturn(bookingAnswerDto);
 
-        Collection<BookingAnswerDto> result = bookingService.getAllByState(owner.getId(), booking.getStatus().name(), null, null);
+        when(bookingRepository.getAllByStateRejected(anyLong(), any())).thenReturn(requestPage);
+        when(bookingRepository.getAllByStateWaiting(anyLong(), any())).thenReturn(requestPage);
+        when(bookingRepository.getAllByStateFuture(anyLong(), any())).thenReturn(requestPage);
+        when(bookingRepository.getAllByStatePast(anyLong(), any())).thenReturn(requestPage);
+        when(bookingRepository.getAllByStateCurrent(anyLong(), any())).thenReturn(requestPage);
+        when(bookingRepository.getAllByStateAll(anyLong(), any())).thenReturn(requestPage);
 
-        assertEquals(1, result.size());
+        assertAll(
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.REJECTED.name(), 0, 2).size()),
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.WAITING.name(), 0, 2).size()),
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.FUTURE.name(), 0, 2).size()),
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.PAST.name(), 0, 2).size()),
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.CURRENT.name(), 0, 2).size()),
+                () -> assertEquals(1, bookingService.getAllByState(owner.getId(), BookingState.ALL.name(), 0, 2).size())
+        );
     }
 
     @Test
@@ -376,5 +506,59 @@ public class BookingServiceUnitTest {
         bookingService.getAll();
 
         verify(bookingRepository, atLeastOnce()).findAll();
+    }
+
+    @Test
+    public void testValidationFail() {
+        LocalDateTime now = LocalDateTime.now();
+
+        User owner = new User();
+        owner.setId(9L);
+        owner.setName("Owner Name");
+        owner.setEmail("owner@yandex.ru");
+
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test Name");
+        user.setEmail("newtest@yandex.ru");
+
+        BookingDto bookingDto = new BookingDto();
+        bookingDto.setStart(now.plusDays(2));
+        bookingDto.setEnd(now.minusDays(3));
+
+        Booking booking = new Booking();
+        bookingDto.setStart(now.plusDays(2));
+        bookingDto.setEnd(now.minusDays(3));
+
+        when(bookingMapper.toBooking(any())).thenReturn(booking);
+
+        assertThrows(BookingDataValidationException.class, () -> bookingService.addBooking(bookingDto, 1L));
+    }
+
+    @Test
+    public void testValidationPass() {
+        LocalDateTime now = LocalDateTime.now();
+
+        User owner = new User();
+        owner.setId(9L);
+        owner.setName("Owner Name");
+        owner.setEmail("owner@yandex.ru");
+
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test Name");
+        user.setEmail("newtest@yandex.ru");
+
+        BookingDto bookingDto = new BookingDto();
+        bookingDto.setStart(now.plusDays(2));
+        bookingDto.setEnd(now.plusDays(3));
+
+        Booking booking = new Booking();
+        booking.setStart(now.plusDays(2));
+        booking.setEnd(now.plusDays(3));
+
+        when(bookingMapper.toBooking(any())).thenReturn(booking);
+
+        assertThrows(NotFoundException.class, () -> bookingService.addBooking(bookingDto, 1L));
     }
 }

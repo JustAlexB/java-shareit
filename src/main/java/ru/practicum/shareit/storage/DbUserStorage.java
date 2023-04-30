@@ -41,7 +41,8 @@ public class DbUserStorage implements Storage<User> {
             validation(user);
             return userStorage.save(user);
         }
-        return userStorage.findById(user.getId()).get();
+        Optional<User> updatedUser = userStorage.findById(user.getId());
+        return updatedUser.orElseGet(() -> userStorage.findById(user.getId()).get());
     }
 
     @Override

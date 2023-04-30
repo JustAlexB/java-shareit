@@ -89,6 +89,34 @@ public class UserControllerTest {
     }
 
     @Test
+    public void testUpdateUserByIdFail() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .id(1L)
+                .name("test name")
+                .build();
+
+        when(userService.update(any(UserDto.class))).thenReturn(null);
+        mockMvc.perform(patch("/users/" + userDto.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testUpdateUserByIdInvalidUserId() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .id(-2L)
+                .name("test name")
+                .build();
+
+        when(userService.update(any(UserDto.class))).thenReturn(null);
+        mockMvc.perform(patch("/users/" + userDto.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     public void testUpdateUser() throws Exception {
         UserDto userDto = UserDto.builder()
                 .id(1L)
@@ -105,6 +133,20 @@ public class UserControllerTest {
         UserDto dtoResponse = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), UserDto.class);
 
         assertEquals(userDto, dtoResponse);
+    }
+
+    @Test
+    public void testUpdateUserNotFound() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .id(1L)
+                .name("test name")
+                .build();
+
+        when(userService.update(any(UserDto.class))).thenReturn(null);
+        mockMvc.perform(put("/users/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDto)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -155,5 +197,18 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("Test name1")));
+    }
+
+    @Test
+    public void testGetUserByIdNotFound() throws Exception {
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test name1");
+        user.setEmail("test1@ya.ru");
+
+        when(userService.getUserByID(user.getId())).thenReturn(Optional.of(user));
+
+        mockMvc.perform(get("/users/2"))
+                .andExpect(status().isNotFound());
     }
 }
