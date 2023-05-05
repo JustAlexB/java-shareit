@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Component
 public class RequestMapper {
     private final ItemMapper itemMapper = new ItemMapper();
+
     public ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
         return new ItemRequest(
                 itemRequestDto.getId(),
