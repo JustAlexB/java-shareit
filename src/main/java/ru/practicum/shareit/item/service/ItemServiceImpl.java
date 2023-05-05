@@ -17,10 +17,8 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.repository.BookingRepository;
-import ru.practicum.shareit.repository.CommentRepository;
-import ru.practicum.shareit.repository.ItemRepository;
-import ru.practicum.shareit.repository.UserRepository;
+import ru.practicum.shareit.repository.*;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 
@@ -40,14 +38,18 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentStorage;
     protected final ItemMapper itemMapper;
     protected final BookingMapper bookingMapper;
+    protected final RequestRepository requestRepository;
+
 
     @Autowired
-    public ItemServiceImpl(ItemRepository itemStorage, UserRepository userStorage, BookingRepository bookingStorage, CommentRepository commentStorage, ItemMapper itemMapper, BookingMapper bookingMapper) {
+    public ItemServiceImpl(ItemRepository itemStorage, UserRepository userStorage, BookingRepository bookingStorage,
+                           CommentRepository commentStorage, ItemMapper itemMapper, RequestRepository requestRepository, BookingMapper bookingMapper) {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
         this.bookingStorage = bookingStorage;
         this.commentStorage = commentStorage;
         this.itemMapper = itemMapper;
+        this.requestRepository = requestRepository;
         this.bookingMapper = bookingMapper;
     }
 
@@ -134,12 +136,14 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(ItemDto itemDto, Long userID) {
         validationItemDto(itemDto);
-        Optional<User> user = userStorage.findById(userID);
-        if (user.isEmpty()) {
-            throw new NotFoundException("Не найден пользователь по ID = " + userID);
+        User user = userStorage.findById(userID)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь по ID = " + userID));
+        Optional<ItemRequest> itemRequest = Optional.empty();
+        if (itemDto.getRequestId() != null) {
+            itemRequest = requestRepository.findById(itemDto.getRequestId());
         }
-        itemDto.setOwner(user.get());
-        Item item = itemMapper.toItem(itemDto);
+        itemDto.setOwner(user);
+        Item item = itemMapper.toItem(itemDto, itemRequest.orElse(null));
         itemDto = itemMapper.toItemDto(itemStorage.save(item));
         return itemDto;
     }
@@ -166,7 +170,8 @@ public class ItemServiceImpl implements ItemService {
         }
         itemStorage.save(item.get());
 
-        return itemMapper.toItemDto(itemStorage.findById(itemID).get());
+        return itemMapper.toItemDto(itemStorage.findById(itemID)
+                .orElseThrow(() -> new NotFoundException("Обновление не удалось")));
     }
 
     @Override

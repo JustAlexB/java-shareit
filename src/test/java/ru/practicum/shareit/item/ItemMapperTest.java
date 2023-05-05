@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import ru.practicum.shareit.item.dto.ItemAnswerDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -36,8 +37,8 @@ public class ItemMapperTest {
         itemDto.setName("Test item");
         itemDto.setDescription("test item description");
         itemDto.setAvailable(true);
-
-        Item item = itemMapper.toItem(itemDto);
+        ItemRequest itemRequest = new ItemRequest();
+        Item item = itemMapper.toItem(itemDto, itemRequest);
 
         assertAll(
                 () -> assertEquals(itemDto.getId(), item.getId()),
@@ -52,12 +53,15 @@ public class ItemMapperTest {
         user.setName("Alex");
         user.setEmail("test@ya.ru");
 
+        ItemRequest itemRequest = new ItemRequest();
+        itemRequest.setId(1L);
+
         ItemAnswerDto itemAnswerDto = new ItemAnswerDto();
         itemAnswerDto.setId(1L);
         itemAnswerDto.setName("Test item");
         itemAnswerDto.setDescription("test item description");
         itemAnswerDto.setAvailable(true);
-        itemAnswerDto.setRequestId(1L);
+        itemAnswerDto.setRequest(itemRequest);
         itemAnswerDto.setComments(null);
         itemAnswerDto.setOwner(user);
 
@@ -65,7 +69,7 @@ public class ItemMapperTest {
 
         assertAll(
                 () -> assertEquals(itemAnswerDto.getId(), item.getId()),
-                () -> assertEquals(itemAnswerDto.getRequestId(), item.getRequestId())
+                () -> assertEquals(itemAnswerDto.getRequest(), item.getRequest())
         );
     }
 
@@ -83,11 +87,14 @@ public class ItemMapperTest {
         item.setAvailable(true);
         item.setOwner(user);
 
+        ItemRequest itemRequest = new ItemRequest();
+        itemRequest.setId(1L);
+
         ItemAnswerDto itemAnswerDto = itemMapper.toAnswerItemDto(item, null, null, null);
 
         assertAll(
                 () -> assertEquals(itemAnswerDto.getId(), item.getId()),
-                () -> assertEquals(itemAnswerDto.getRequestId(), item.getRequestId())
+                () -> assertEquals(itemAnswerDto.getRequest(), item.getRequest())
         );
     }
 }

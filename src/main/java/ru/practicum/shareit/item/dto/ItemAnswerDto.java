@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.model.BookingDetails;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.NotBlank;
@@ -24,7 +25,7 @@ public class ItemAnswerDto {
     @NotNull
     private Boolean available;
     private UserDto owner;
-    private Long requestId;
+    private ItemRequest request;
     private BookingDetails lastBooking;
     private BookingDetails nextBooking;
     private List<CommentDto> comments;

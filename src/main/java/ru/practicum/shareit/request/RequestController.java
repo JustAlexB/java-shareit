@@ -7,6 +7,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.RequestService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Controller
@@ -31,9 +32,9 @@ public class RequestController {
     }
 
     @GetMapping("/all")
-    public @ResponseBody List<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                             @RequestParam(name = "from", required = false) Integer from,
-                                                             @RequestParam(name = "size", required = false) Integer size) {
+    public @ResponseBody List<ItemRequestDto> getAllRequests(@Valid @RequestHeader("X-Sharer-User-Id") Long userId,
+                                                             @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
+                                                             @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         return requestService.getAllUsersRequests(userId, from, size);
     }
 

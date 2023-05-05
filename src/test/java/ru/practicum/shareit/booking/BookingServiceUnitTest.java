@@ -69,7 +69,7 @@ public class BookingServiceUnitTest {
         booking.setStart(bookingDto.getStart());
         booking.setEnd(bookingDto.getEnd());
 
-        assertThrows(NullPointerException.class, () -> bookingService.addBooking(bookingDto, 5L));
+        assertThrows(BookingDataValidationException.class, () -> bookingService.addBooking(bookingDto, 5L));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class BookingServiceUnitTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(owner);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
 
         ItemAnswerDto itemAnswerDto = new ItemAnswerDto();
         itemAnswerDto.setId(1L);
@@ -170,7 +170,7 @@ public class BookingServiceUnitTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(owner);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
 
         Booking booking = new Booking();
         booking.setId(1L);
@@ -210,7 +210,7 @@ public class BookingServiceUnitTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(owner);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
 
         Booking booking = new Booking();
         booking.setId(1L);
@@ -249,7 +249,7 @@ public class BookingServiceUnitTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(owner);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
 
         Booking booking = new Booking();
         booking.setId(1L);
@@ -305,7 +305,7 @@ public class BookingServiceUnitTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(owner);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
 
         Booking booking = new Booking();
         booking.setId(1L);
@@ -360,7 +360,7 @@ public class BookingServiceUnitTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(owner);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
 
         Booking booking = new Booking();
         booking.setId(1L);
@@ -408,7 +408,7 @@ public class BookingServiceUnitTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(owner);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
 
         Booking booking = new Booking();
         booking.setId(1L);
@@ -463,7 +463,7 @@ public class BookingServiceUnitTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(owner);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
 
         Booking booking = new Booking();
         booking.setId(1L);

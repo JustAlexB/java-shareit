@@ -22,11 +22,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Slice<Booking> getAllByStateAll(@Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = :userId " +
-            "AND CURRENT_TIMESTAMP BETWEEN b.start AND b.end ORDER BY b.start DESC")
+            "AND CURRENT_TIMESTAMP BETWEEN b.start AND b.end ORDER BY b.start ASC")
     List<Booking> getAllByStateCurrent(@Param("userId") Long userId);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = :userId " +
-            "AND CURRENT_TIMESTAMP BETWEEN b.start AND b.end ORDER BY b.start DESC")
+            "AND CURRENT_TIMESTAMP BETWEEN b.start AND b.end ORDER BY b.start ASC")
     Slice<Booking> getAllByStateCurrent(@Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = :userId AND b.end < CURRENT_TIMESTAMP ORDER BY b.start DESC")

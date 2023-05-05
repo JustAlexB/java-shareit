@@ -7,6 +7,8 @@ import org.mockito.Mock;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.repository.ItemRepository;
 import ru.practicum.shareit.repository.RequestRepository;
 import ru.practicum.shareit.repository.UserRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -16,9 +18,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -34,6 +34,9 @@ public class RequestServiceUnitTest {
     private RequestMapper requestMapper;
     @Mock
     UserRepository userRepository;
+    @Mock
+    ItemRepository itemRepository;
+
     private final LocalDateTime created = LocalDateTime.parse("2023-04-24T15:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
     @Test
@@ -58,11 +61,10 @@ public class RequestServiceUnitTest {
         testRequest.setName("Маузер");
         testRequest.setDescription("test request");
         testRequest.setCreated(created);
-        testRequest.setItems(new ArrayList<>());
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(requestMapper.toItemRequestDto(any())).thenReturn(testDto);
-        when(requestMapper.toItemReques(any())).thenReturn(testRequest);
+        when(requestMapper.toItemRequest(any())).thenReturn(testRequest);
         requestService.create(testDto, user.getId());
         verify(requestRepository, atLeastOnce()).save(any());
     }
@@ -88,7 +90,6 @@ public class RequestServiceUnitTest {
         testRequest.setName("Маузер");
         testRequest.setDescription("test request");
         testRequest.setCreated(created);
-        testRequest.setItems(new ArrayList<>());
 
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(requestRepository.findById(anyLong())).thenReturn(Optional.of(testRequest));
@@ -116,10 +117,12 @@ public class RequestServiceUnitTest {
 
 
         List<ItemRequest> requestList = new ArrayList<>();
+        List<Item> items = new ArrayList<>();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(requestRepository.findAllByRequestor(any(), any())).thenReturn(requestList);
         when(requestMapper.toItemRequestDto(any())).thenReturn(testDto);
+        when(itemRepository.findItemsByRequests(any())).thenReturn(items);
 
         requestService.getMyRequests(user.getId());
         verify(requestRepository, atLeastOnce()).findAllByRequestor(user, Sort.by(DESC, "created"));
@@ -145,11 +148,11 @@ public class RequestServiceUnitTest {
         List<ItemRequest> requestList = new ArrayList<>();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(requestRepository.findAllByRequestor(any(), any())).thenReturn(requestList);
+        when(requestRepository.findAllByRequestorNot(any(), any())).thenReturn(requestList);
         when(requestMapper.toItemRequestDto(any())).thenReturn(testDto);
 
-        requestService.getAllUsersRequests(user.getId(), null, null);
-        verify(requestRepository, atLeastOnce()).findAllByRequestor(user, Sort.by(DESC, "created"));
+        requestService.getAllUsersRequests(user.getId(), 0, 2);
+        verify(requestRepository, atLeastOnce()).findAllByRequestorNot(user, PageRequest.of(0, 2, Sort.by("created").ascending()));
     }
 
     @Test

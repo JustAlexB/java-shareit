@@ -47,7 +47,7 @@ public class BookingRepositoryTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(user);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
         Item savedItem = itemRepository.save(item);
 
         List<Item> itemList = new ArrayList<>();
@@ -107,7 +107,7 @@ public class BookingRepositoryTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(user);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
         Item savedItem = itemRepository.save(item);
 
         Booking booking1 = new Booking();
@@ -137,7 +137,7 @@ public class BookingRepositoryTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(user);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
         Item savedItem = itemRepository.save(item);
 
         Booking booking1 = new Booking();
@@ -167,7 +167,7 @@ public class BookingRepositoryTest {
         item.setDescription("ручная дерль СПААААСИТЕ");
         item.setOwner(user);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
         Item savedItem = itemRepository.save(item);
 
         Booking booking1 = new Booking();
@@ -197,7 +197,7 @@ public class BookingRepositoryTest {
         item.setDescription("отвертка простая обычная");
         item.setOwner(user);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
         Item savedItem = itemRepository.save(item);
         List<Item> itemList = new ArrayList<>();
         itemList.add(item);
@@ -264,7 +264,7 @@ public class BookingRepositoryTest {
         item.setDescription("отвертка простая обычная");
         item.setOwner(user);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
         Item savedItem = itemRepository.save(item);
 
         Booking booking1 = new Booking();
@@ -317,7 +317,7 @@ public class BookingRepositoryTest {
         item.setDescription("отвертка простая обычная");
         item.setOwner(user);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
         Item savedItem = itemRepository.save(item);
 
         Booking booking1 = new Booking();
@@ -370,7 +370,7 @@ public class BookingRepositoryTest {
         item.setDescription("отвертка простая обычная");
         item.setOwner(user);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
         Item savedItem = itemRepository.save(item);
 
         Booking booking1 = new Booking();
@@ -430,7 +430,7 @@ public class BookingRepositoryTest {
         item.setDescription("ручная дерль дизельная");
         item.setOwner(user);
         item.setAvailable(true);
-        item.setRequestId(null);
+        item.setRequest(null);
         itemRepository.save(item);
 
         Booking booking = new Booking();

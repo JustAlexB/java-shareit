@@ -29,8 +29,8 @@ public class ItemAnswerDtoTest {
                 .build();
 
         String jsonOutput = json.write(testDto).getJson();
-        String expectedJson = "{\"id\":1,\"name\":\"Item1\",\"description\":null,\"available\":null,\"owner\":null,\"requestId\":null,\"lastBooking\":null," +
-                "\"nextBooking\":null,\"comments\":null}";
+        String expectedJson = "{\"id\":1,\"name\":\"Item1\",\"description\":null,\"available\":null,\"owner\":null," +
+                "\"request\":null,\"lastBooking\":null,\"nextBooking\":null,\"comments\":null}";
 
         assertThat(jsonOutput).isEqualTo(expectedJson);
     }

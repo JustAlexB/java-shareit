@@ -49,7 +49,7 @@ public class ItemServiceInMem {
             throw new NotFoundException("Не найден пользователь по ID = " + userID);
         }
         itemDto.setOwner(user.get());
-        Item item = itemMapper.toItem(itemDto);
+        Item item = itemMapper.toItem(itemDto, null);
         itemDto = itemMapper.toItemDto(itemStorage.create(item));
         return itemDto;
     }

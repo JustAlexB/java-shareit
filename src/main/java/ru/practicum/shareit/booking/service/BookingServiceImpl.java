@@ -195,6 +195,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void validation(Booking booking) {
+        if (booking == null) {
+            throw  new BookingDataValidationException("значение booking не может быть валидировано");
+        }
         LocalDateTime startDate = booking.getStart();
         LocalDateTime endDate = booking.getEnd();
         if (startDate == null || endDate == null

@@ -99,7 +99,7 @@ public class ItemServiceUnitTest {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(itemMapper.toItemDto(any())).thenReturn(itemDto);
-        when(itemMapper.toItem(any())).thenReturn(item);
+        when(itemMapper.toItem(any(), any())).thenReturn(item);
 
         itemService.create(itemDto, user.getId());
 
