@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.booking.BookingStatus;
@@ -118,7 +117,6 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    @Transactional
     @Override
     public BookingAnswerDto addBooking(BookingDto bookingDto, Long userID) {
         Booking newBooking = bookingMapper.toBooking(bookingDto);
