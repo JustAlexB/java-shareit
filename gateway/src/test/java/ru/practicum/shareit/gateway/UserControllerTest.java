@@ -38,7 +38,7 @@ public class UserControllerTest {
     private final String path = "/users";
 
     @Test
-    public void ShouldGetUser() throws Exception {
+    public void shouldGetUser() throws Exception {
         UserDtoGtw user = new UserDtoGtw("Alex", "Alex@ya.ru");
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(user, HttpStatus.OK);
         when(userClient.getUser(anyLong())).thenReturn(responseEntity);
@@ -49,7 +49,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void ShouldGetUsers() throws Exception {
+    public void shouldGetUsers() throws Exception {
         UserDtoGtw user = new UserDtoGtw("Alex", "Alex@ya.ru");
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(user, HttpStatus.OK);
         when(userClient.getUsers()).thenReturn(responseEntity);
@@ -60,7 +60,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void ShouldAddUser() throws Exception {
+    public void shouldAddUser() throws Exception {
         UserDtoGtw user = new UserDtoGtw("Alex", "Alex@ya.ru");
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(user, HttpStatus.OK);
         when(userClient.addUser(any())).thenReturn(responseEntity);
@@ -77,7 +77,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void ShouldUpdateUser() throws Exception {
+    public void shouldUpdateUser() throws Exception {
         UserDtoGtw user = new UserDtoGtw("Alex", "Alex@ya.ru");
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(user, HttpStatus.OK);
         when(userClient.updateUser(any(), anyLong())).thenReturn(responseEntity);
@@ -90,7 +90,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void ShouldDelUser() throws Exception {
+    public void shouldDelUser() throws Exception {
         mockMvc.perform(delete(path + "/1"))
                 .andExpect(status().isOk());
         verify(userClient, times(1)).deleteUser(1L);

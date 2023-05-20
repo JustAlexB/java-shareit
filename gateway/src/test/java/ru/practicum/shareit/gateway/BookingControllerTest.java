@@ -1,8 +1,6 @@
 package ru.practicum.shareit.gateway;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import ru.practicum.shareit.booking.dto.BookingState;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -43,7 +40,7 @@ public class BookingControllerTest {
     private final String xUserId = "X-Sharer-User-Id";
 
     @Test
-    public void ShouldAddBooking() throws Exception {
+    public void shouldAddBooking() throws Exception {
         BookingDtoGtw booking = new BookingDtoGtw(9L, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(3));
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(booking, HttpStatus.OK);
         when(bookingClient.bookItem(anyLong(), any(BookingDtoGtw.class))).thenReturn(responseEntity);
@@ -57,7 +54,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void ShouldGetBooking() throws Exception {
+    public void shouldGetBooking() throws Exception {
         BookingDtoGtw booking = new BookingDtoGtw(9L, LocalDateTime.now(), LocalDateTime.now().plusDays(3));
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(booking, HttpStatus.OK);
         when(bookingClient.getBooking(anyLong(), anyLong())).thenReturn(responseEntity);
@@ -69,7 +66,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void ShouldUpdateStatus() throws Exception {
+    public void shouldUpdateStatus() throws Exception {
         BookingDtoGtw booking = new BookingDtoGtw(9L, LocalDateTime.now(), LocalDateTime.now().plusDays(3));
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(booking, HttpStatus.OK);
         when(bookingClient.updateStatus(anyLong(), anyLong(), anyString())).thenReturn(responseEntity);
@@ -83,7 +80,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void ShouldGetBookings() throws Exception {
+    public void shouldGetBookings() throws Exception {
         String state = "ALL";
         Integer from = 0;
         Integer size = 5;
@@ -104,7 +101,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void ShouldGetBookingsForOwner() throws Exception {
+    public void shouldGetBookingsForOwner() throws Exception {
         String state = "ALL";
         Integer from = 0;
         Integer size = 5;

@@ -39,7 +39,7 @@ public class ItemControllerTest {
     private final String xUserId = "X-Sharer-User-Id";
 
     @Test
-    public void ShouldAddItem() throws Exception {
+    public void shouldAddItem() throws Exception {
         ItemDtoGtw item = new ItemDtoGtw("Молоток", "обычный красивый красный", true, 1L);
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(item, HttpStatus.OK);
         when(itemClient.addItem(any(), anyLong())).thenReturn(responseEntity);
@@ -53,7 +53,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void ShouldAddComment() throws Exception {
+    public void shouldAddComment() throws Exception {
         CommentDtoGtw comment = new CommentDtoGtw("у меня нет слов");
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(comment, HttpStatus.OK);
         when(itemClient.addComment(any(), anyLong(), anyLong())).thenReturn(responseEntity);
@@ -67,7 +67,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void ShouldUpdateItem() throws Exception {
+    public void shouldUpdateItem() throws Exception {
         ItemDtoGtw item = new ItemDtoGtw("Молоток", "обычный красивый красный", true, 1L);
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(item, HttpStatus.OK);
         when(itemClient.updateItem(any(), anyLong(), anyLong())).thenReturn(responseEntity);
@@ -81,7 +81,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void ShouldSearchItem() throws Exception {
+    public void shouldSearchItem() throws Exception {
         ItemDtoGtw item = new ItemDtoGtw("Молоток", "обычный красивый красный", true, 1L);
         ItemDtoGtw item1 = new ItemDtoGtw("Дрель", "обычная красивая дрель ", true, 2L);
         List<ItemDtoGtw> items = Arrays.asList(item, item1);
@@ -96,7 +96,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void ShouldGetAllItems() throws Exception {
+    public void shouldGetAllItems() throws Exception {
         ItemDtoGtw item = new ItemDtoGtw("Молоток", "обычный красивый красный", true, 1L);
         ItemDtoGtw item1 = new ItemDtoGtw("Дрель", "обычная красивая дрель ", true, 2L);
         List<ItemDtoGtw> items = Arrays.asList(item, item1);
@@ -111,7 +111,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void ShouldGetItemById() throws Exception {
+    public void shouldGetItemById() throws Exception {
         ItemDtoGtw item = new ItemDtoGtw("Молоток", "обычный красивый красный", true, 1L);
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(item, HttpStatus.OK);
         when(itemClient.getItemById(any(),anyLong())).thenReturn(responseEntity);

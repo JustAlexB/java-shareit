@@ -42,7 +42,7 @@ public class RequestControllerTest {
     private final String xUserId = "X-Sharer-User-Id";
 
     @Test
-    public void ShouldAddRequest() throws Exception {
+    public void shouldAddRequest() throws Exception {
         RequestDtoGtw request = new RequestDtoGtw("мне нужна веревка и мыльце");
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(request, HttpStatus.OK);
         when(requestClient.create(any(), anyLong())).thenReturn(responseEntity);
@@ -56,7 +56,7 @@ public class RequestControllerTest {
     }
 
     @Test
-    public void ShouldGetMyRequests() throws Exception {
+    public void shouldGetMyRequests() throws Exception {
         RequestDtoGtw request = new RequestDtoGtw("мне нужна веревка и мыльце");
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(request, HttpStatus.OK);
         when(requestClient.getMyRequests(anyLong())).thenReturn(responseEntity);
@@ -69,7 +69,7 @@ public class RequestControllerTest {
     }
 
     @Test
-    public void ShouldGetRequestById() throws Exception {
+    public void shouldGetRequestById() throws Exception {
         RequestDtoGtw request = new RequestDtoGtw("мне нужна веревка и мыльце");
         ResponseEntity<Object> responseEntity = new ResponseEntity<Object>(request, HttpStatus.OK);
         when(requestClient.getRequestById(anyLong(), anyLong())).thenReturn(responseEntity);
@@ -83,7 +83,7 @@ public class RequestControllerTest {
     }
 
     @Test
-    public void ShouldGetAllRequests() throws Exception {
+    public void shouldGetAllRequests() throws Exception {
         int from = 0;
         int size = 2;
         RequestDtoGtw request = new RequestDtoGtw("мне нужна веревка и мыльце");
