@@ -16,6 +16,7 @@ import java.util.Map;
 @Service
 public class RequestClient extends BaseClient {
     private static final String API_PREFIX = "/requests";
+    private String path = "";
 
     @Autowired
     public RequestClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -28,20 +29,20 @@ public class RequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> create(RequestDtoGtw request, Long userId) {
-        return post("", userId, request);
+        return post(path, userId, request);
     }
 
     public ResponseEntity<Object> getMyRequests(Long userId) {
-        return get("", userId);
+        return get(path, userId);
     }
 
     public ResponseEntity<Object> getAllUsersRequests(Long userId, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of("from", from,"size", size);
-        return get("/all?from={from}&size={size}", userId, parameters);
+        return get(path + "/all?from={from}&size={size}", userId, parameters);
     }
 
     public ResponseEntity<Object> getRequestById(Long userId, Long requestId) {
-        return get("/" + requestId, userId);
+        return get(path + "/" + requestId, userId);
     }
 }
 

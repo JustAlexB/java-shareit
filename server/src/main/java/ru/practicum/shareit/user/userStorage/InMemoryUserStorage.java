@@ -57,7 +57,7 @@ public class InMemoryUserStorage extends InMemoryStorage<User> {
         for (Map.Entry<Long, User> entry : elements.entrySet()) {
             if (user.equals(entry.getValue())) {
                 log.info("Пользователь {} не будет добавлен.", user);
-                throw new ValidationException("Пользователь с таким email уже существует.", user);
+                throw new ValidationException("Пользователь с таким email уже существует.");
             }
         }
     }

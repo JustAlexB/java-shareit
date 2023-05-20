@@ -113,7 +113,7 @@ public class RequestControllerTest {
 
     @Test
     public void testGetRequestByIdValidation() throws Exception {
-        when(requestService.getRequestById(anyLong(), anyLong())).thenThrow(new ValidationException("for test", 1L));
+        when(requestService.getRequestById(anyLong(), anyLong())).thenThrow(new ValidationException("for test"));
 
         mockMvc.perform(get("/requests/{requestId}", 1L)
                         .header("X-Sharer-User-Id", 2L))
